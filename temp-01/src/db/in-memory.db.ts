@@ -1,4 +1,8 @@
-import { Vehicle, VehicleStatus } from '../vehicles/types/vehicle';
+import {
+  Vehicle,
+  VehicleFeature,
+  VehicleStatus,
+} from '../vehicles/types/vehicle';
 
 export const db = {
   vehicles: <Vehicle[]>[
@@ -9,6 +13,8 @@ export const db = {
       status: VehicleStatus.OnOrder,
       number: 32145,
       createdAt: new Date(),
+      description: null,
+      features: null,
     },
     {
       id: 2,
@@ -17,6 +23,8 @@ export const db = {
       status: VehicleStatus.AwaitingOrder,
       number: 21342,
       createdAt: new Date(),
+      description: null,
+      features: [VehicleFeature.WiFi, VehicleFeature.ChildSeat],
     },
     {
       id: 3,
@@ -25,6 +33,8 @@ export const db = {
       status: VehicleStatus.OnOrder,
       number: 31234,
       createdAt: new Date(),
+      description: null,
+      features: null,
     },
   ],
 };

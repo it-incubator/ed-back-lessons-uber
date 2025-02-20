@@ -4,6 +4,12 @@ export enum VehicleStatus {
   OnPause = 'on-pause',
 }
 
+export enum VehicleFeature {
+  WiFi = 'wi-fi',
+  ChildSeat = 'child-seat',
+  PetFriendly = 'pet-friendly',
+}
+
 export type Vehicle = {
   id: number;
   name: string;
@@ -11,4 +17,6 @@ export type Vehicle = {
   status: VehicleStatus;
   number: number;
   createdAt: Date;
+  description: string | null;
+  features: VehicleFeature[] | null;
 };

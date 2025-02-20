@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { db } from '../../db/in-memory.db';
 import { HttpStatus } from '../../core/types/http-statuses';
 
-import { Vehicle, VehicleStatus } from '../types/vehicle';
+import { Vehicle, VehicleFeature, VehicleStatus } from '../types/vehicle';
 
 export const vehiclesRouter = Router({});
 
@@ -11,20 +11,30 @@ interface ValidationError {
   message: string;
 }
 
+type VehicleInputDto = {
+  name: string;
+  driver: string;
+  number: number;
+  description?: string;
+  features?: VehicleFeature[];
+};
+
 const createErrorMessages = (
   errors: ValidationError[],
 ): { errorMessages: ValidationError[] } => {
   return { errorMessages: errors };
 };
 
-const validateVehicle = (data: any): ValidationError[] => {
+const vehicleInputDtoValidation = (
+  data: VehicleInputDto,
+): ValidationError[] => {
   const errors: ValidationError[] = [];
 
   if (
     !data.name ||
     typeof data.name !== 'string' ||
-    data.name.length < 2 ||
-    data.name.length > 15
+    data.name.trim().length < 2 ||
+    data.name.trim().length > 15
   ) {
     errors.push({ field: 'name', message: 'Invalid name' });
   }
@@ -32,20 +42,40 @@ const validateVehicle = (data: any): ValidationError[] => {
   if (
     !data.driver ||
     typeof data.driver !== 'string' ||
-    data.driver.length < 2 ||
-    data.driver.length > 20
+    data.driver.trim().length < 2 ||
+    data.driver.trim().length > 20
   ) {
     errors.push({ field: 'driver', message: 'Invalid driver' });
   }
 
-  if (data.status) {
-    if (!Object.values(VehicleStatus).includes(data.status)) {
-      errors.push({ field: 'status', message: 'Invalid status' });
+  if (!data.number || typeof data.number !== 'number') {
+    errors.push({ field: 'number', message: 'Invalid number' });
+  }
+
+  if (data.description) {
+    if (
+      typeof data.description !== 'string' ||
+      data.description.trim().length < 10 ||
+      data.description.trim().length > 200
+    ) {
+      errors.push({ field: 'driver', message: 'Invalid driver' });
     }
   }
 
-  if (!data.number || typeof data.number !== 'number') {
-    errors.push({ field: 'number', message: 'Invalid number' });
+  if (Array.isArray(data.features)) {
+    const existingFeatures = Object.values(VehicleFeature);
+    if (
+      data.features.length > existingFeatures.length ||
+      data.features.length < 1
+    ) {
+      errors.push({ field: 'features', message: 'Invalid features' });
+    }
+    for (const feature of data.features) {
+      if (!existingFeatures.includes(feature)) {
+        errors.push({ field: 'features', message: 'Invalid feature' });
+        break;
+      }
+    }
   }
 
   return errors;
@@ -74,8 +104,8 @@ vehiclesRouter
     res.send(vehicle);
   })
 
-  .post('', (req: Request, res: Response) => {
-    const errors = validateVehicle(req.body);
+  .post('', (req: Request<{}, {}, VehicleInputDto>, res: Response) => {
+    const errors = vehicleInputDtoValidation(req.body);
 
     if (errors.length > 0) {
       res.status(HttpStatus.BadRequest).send(createErrorMessages(errors));
@@ -89,6 +119,8 @@ vehiclesRouter
       name: req.body.name,
       number: req.body.number,
       //default values
+      description: req.body.description || null,
+      features: req.body.features || null,
       status: VehicleStatus.AwaitingOrder,
       createdAt: new Date(),
     };
@@ -97,38 +129,83 @@ vehiclesRouter
     res.status(HttpStatus.Created).send(newVehicle);
   })
 
-  .put('/:id', (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
-    const index = db.vehicles.findIndex((v) => v.id === id);
+  .put(
+    '/:id',
+    (req: Request<{ id: string }, {}, VehicleInputDto>, res: Response) => {
+      const id = parseInt(req.params.id);
+      const index = db.vehicles.findIndex((v) => v.id === id);
 
-    if (index === -1) {
-      res
-        .status(HttpStatus.NotFound)
-        .send(
-          createErrorMessages([{ field: 'id', message: 'Vehicle not found' }]),
-        );
+      if (index === -1) {
+        res
+          .status(HttpStatus.NotFound)
+          .send(
+            createErrorMessages([
+              { field: 'id', message: 'Vehicle not found' },
+            ]),
+          );
 
-      return;
-    }
+        return;
+      }
 
-    const errors = validateVehicle(req.body);
+      const errors = vehicleInputDtoValidation(req.body);
 
-    if (errors.length > 0) {
-      res.status(HttpStatus.BadRequest).send(createErrorMessages(errors));
+      if (errors.length > 0) {
+        res.status(HttpStatus.BadRequest).send(createErrorMessages(errors));
 
-      return;
-    }
+        return;
+      }
 
-    db.vehicles[index] = {
-      ...db.vehicles[index],
-      driver: req.body.driver,
-      name: req.body.name,
-      number: req.body.number,
-      status: req.body.status,
-    };
+      db.vehicles[index] = {
+        ...db.vehicles[index],
+        driver: req.body.driver,
+        name: req.body.name,
+        number: req.body.number,
+        //optional value
+        ...(req.body.description && { description: req.body.description }),
+        ...(req.body.features && { features: req.body.features }),
+      };
 
-    res.sendStatus(HttpStatus.NoContent);
-  })
+      res.sendStatus(HttpStatus.NoContent);
+    },
+  )
+
+  .put(
+    '/:id/status',
+    (
+      req: Request<{ id: string }, {}, { status: VehicleStatus }>,
+      res: Response,
+    ) => {
+      const id = parseInt(req.params.id);
+      const index = db.vehicles.findIndex((v) => v.id === id);
+
+      if (index === -1) {
+        res
+          .status(HttpStatus.NotFound)
+          .send(
+            createErrorMessages([
+              { field: 'id', message: 'Vehicle not found' },
+            ]),
+          );
+
+        return;
+      }
+
+      if (!Object.values(VehicleStatus).includes(req.body.status)) {
+        res
+          .status(HttpStatus.BadRequest)
+          .send([{ field: 'status', message: 'incorrect status' }]);
+
+        return;
+      }
+
+      db.vehicles[index] = {
+        ...db.vehicles[index],
+        status: req.body.status,
+      };
+
+      res.sendStatus(HttpStatus.NoContent);
+    },
+  )
 
   .delete('/:id', (req: Request, res: Response) => {
     const id = parseInt(req.params.id);

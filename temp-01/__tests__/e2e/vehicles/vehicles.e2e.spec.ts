@@ -1,6 +1,10 @@
 import request from 'supertest';
 
-import { Vehicle, VehicleStatus } from '../../../src/vehicles/types/vehicle';
+import {
+  Vehicle,
+  VehicleFeature,
+  VehicleStatus,
+} from '../../../src/vehicles/types/vehicle';
 import { initApp } from '../../../src/init-app';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { db } from '../../../src/db/in-memory.db';
@@ -15,9 +19,14 @@ describe('Vehicle API', () => {
     status: VehicleStatus.AwaitingOrder,
     number: 123,
     createdAt: new Date(),
+    description: null,
+    features: null,
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await request(app)
+      .delete('/api/testing/all-data')
+      .expect(HttpStatus.NoContent);
     db.vehicles = [testVehicleData];
   });
 
@@ -72,6 +81,8 @@ describe('Vehicle API', () => {
       id: createdVehicleResponse.body.id,
       createdAt: createdVehicleResponse.body.createdAt,
       status: VehicleStatus.AwaitingOrder,
+      description: null,
+      features: null,
     });
   });
 
@@ -79,8 +90,9 @@ describe('Vehicle API', () => {
     const vehicleBody = {
       driver: 'new driver',
       name: 'new name',
-      status: VehicleStatus.AwaitingOrder,
+      description: 'this is supercar',
       number: 123,
+      features: [VehicleFeature.ChildSeat],
     };
 
     await request(app)
@@ -94,7 +106,23 @@ describe('Vehicle API', () => {
       ...vehicleBody,
       id: 1,
       createdAt: expect.any(String),
+      status: VehicleStatus.AwaitingOrder,
     });
+  });
+
+  it('should update vehicle status; PUT /api/vehicles/:id/status', async () => {
+    const vehicleBody = {
+      status: VehicleStatus.OnOrder,
+    };
+
+    await request(app)
+      .put('/api/vehicles/1/status')
+      .send(vehicleBody)
+      .expect(HttpStatus.NoContent);
+
+    const vehicleResponse = await request(app).get(`/api/vehicles/1`);
+
+    expect(vehicleResponse.body.status).toBe(VehicleStatus.OnOrder);
   });
 
   it('DELETE /api/vehicles/:id', async () => {
