@@ -12,7 +12,7 @@ export const setupApp = (app: Express) => {
   app.use(cors());
   app.use(express.json());
 
-  app.use('/api/vehicles', driversRouter);
+  app.use('/api/drivers', driversRouter);
   app.use('/api/testing', testingRouter);
 
   setupSwagger(app);

@@ -2,7 +2,6 @@ import request from 'supertest';
 import express from 'express';
 
 import {
-  Driver,
   DriverStatus,
   VehicleFeature,
 } from '../../../src/drivers/types/driver';
@@ -59,9 +58,9 @@ describe('Driver API', () => {
       .send({ ...testDriverData, name: 'Another Driver' })
       .expect(HttpStatus.Created);
 
-    await request(app)
+    const res = await request(app)
       .post('/api/drivers')
-      .send({ ...testDriverData, name: 'Another Driver 2' })
+      .send({ ...testDriverData, name: 'Another Driver2' })
       .expect(HttpStatus.Created);
 
     const response = await request(app)
@@ -83,7 +82,7 @@ describe('Driver API', () => {
       .expect(HttpStatus.Ok);
 
     expect(getResponse.body).toEqual({
-      ...testDriverData,
+      ...createResponse.body,
       id: expect.any(Number),
       createdAt: expect.any(String),
     });
@@ -120,6 +119,7 @@ describe('Driver API', () => {
       ...driverUpdateData,
       id: createResponse.body.id,
       createdAt: expect.any(String),
+      status: DriverStatus.AwaitingOrder,
     });
   });
 

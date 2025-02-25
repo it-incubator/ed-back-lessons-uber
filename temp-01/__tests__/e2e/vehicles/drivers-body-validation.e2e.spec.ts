@@ -13,7 +13,7 @@ describe('Driver API body validation check', () => {
   setupApp(app);
 
   const correctTestDriverData: DriverInputDto = {
-    name: 'Correct Valentin',
+    name: 'Valentin',
     phoneNumber: '123-456-7890',
     email: 'valentin@example.com',
     vehicleMake: 'BMW',
@@ -69,7 +69,7 @@ describe('Driver API body validation check', () => {
       })
       .expect(HttpStatus.BadRequest);
 
-    expect(response3.body.errorMessages).toHaveLength(4);
+    expect(response3.body.errorMessages).toHaveLength(1);
 
     // check что никто не создался
     const response = await request(app).get('/api/drivers');
@@ -111,14 +111,14 @@ describe('Driver API body validation check', () => {
     expect(response2.body.errorMessages).toHaveLength(4);
 
     const response3 = await request(app)
-      .put(`/api/drivers${createdDriverId}`)
+      .put(`/api/drivers/${createdDriverId}`)
       .send({
         ...correctTestDriverData,
-        name: 'A', // too shot
+        name: 'A', //too short
       })
       .expect(HttpStatus.BadRequest);
 
-    expect(response3.body.errorMessages).toHaveLength(4);
+    expect(response3.body.errorMessages).toHaveLength(1);
 
     const driverResponse = await request(app).get(
       `/api/drivers/${createdDriverId}`,
@@ -128,6 +128,7 @@ describe('Driver API body validation check', () => {
       ...correctTestDriverData,
       id: createdDriverId,
       createdAt: expect.any(String),
+      status: DriverStatus.AwaitingOrder,
     });
   });
 
@@ -159,6 +160,7 @@ describe('Driver API body validation check', () => {
       ...correctTestDriverData,
       id: createdDriverId,
       createdAt: expect.any(String),
+      status: DriverStatus.AwaitingOrder,
     });
   });
 

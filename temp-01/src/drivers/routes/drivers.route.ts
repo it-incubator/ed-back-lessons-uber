@@ -57,6 +57,7 @@ driversRouter
     };
 
     db.drivers.push(newDriver);
+
     res.status(HttpStatus.Created).send(newDriver);
   })
 
