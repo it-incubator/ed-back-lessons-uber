@@ -1,253 +1,252 @@
 openapi: 3.0.0
 info:
- title: API Documentation
- version: 1.0.0
+  title: API Documentation
+  version: 1.0.0
 
 tags:
- - name: Testing
-   description: For API testing
- - name: Vehicles
-   description: API for managing vehicles
+  - name: Testing
+    description: For API testing
+  - name: Vehicles
+    description: API for managing vehicles
 
 paths:
- /api/testing/all-data:
-  delete:
-   summary: "Clear database: delete all data from all tables/collections"
-   tags: [Testing]
-   responses:
-    204:
-     description: All data deleted
+  /api/testing/all-data:
+    delete:
+      summary: "Clear database: delete all data from all tables/collections"
+      tags: [ Testing ]
+      responses:
+        204:
+          description: All data deleted
 
- /api/vehicles:
-  get:
-   summary: Get a list of all vehicles
-   tags: [Vehicles]
-   responses:
-    200:
-     description: List of all vehicles
-     content:
-      application/json:
-       schema:
-        type: array
-        items:
-         $ref: '#/components/schemas/Vehicle'
-  post:
-   summary: Add a new vehicle
-   tags: [Vehicles]
-   requestBody:
-    required: true
-    content:
-     application/json:
-      schema:
-       $ref: '#/components/schemas/VehicleInputDto'
-   responses:
-    201:
-     description: The vehicle was successfully created
-     content:
-      application/json:
-       schema:
-        $ref: '#/components/schemas/Vehicle'
-    400:
-     description: Validation error
-     content:
-      application/json:
-       schema:
-        $ref: '#/components/schemas/ValidationErrorResponse'
+  /api/vehicles:
+    get:
+      summary: Get a list of all vehicles
+      tags: [ Vehicles ]
+      responses:
+        200:
+          description: List of all vehicles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Driver'
+    post:
+      summary: Add a new vehicle
+      tags: [ Vehicles ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverInputDto'
+      responses:
+        201:
+          description: The vehicle was successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
 
- /api/vehicles/{id}:
-  get:
-   summary: Get a vehicle by ID
-   tags: [Vehicles]
-   parameters:
-    - in: path
-      name: id
-      required: true
-      schema:
-       type: integer
-   responses:
-    200:
-     description: The requested vehicle
-     content:
-      application/json:
-       schema:
-        $ref: '#/components/schemas/Vehicle'
-    404:
-     description: Vehicle not found
-  put:
-   summary: Update a vehicle by ID
-   tags: [Vehicles]
-   parameters:
-    - in: path
-      name: id
-      required: true
-      schema:
-       type: integer
-   requestBody:
-    required: true
-    content:
-     application/json:
-      schema:
-       $ref: '#/components/schemas/VehicleInputDto'
-   responses:
-    204:
-     description: Vehicle updated successfully
-    400:
-     description: Validation error
-     content:
-      application/json:
-       schema:
-        $ref: '#/components/schemas/ValidationErrorResponse'
-    404:
-     description: Vehicle not found
-  delete:
-   summary: Delete a vehicle by ID
-   tags: [Vehicles]
-   parameters:
-    - in: path
-      name: id
-      required: true
-      schema:
-       type: integer
-   responses:
-    204:
-     description: Vehicle deleted successfully
-    404:
-     description: Vehicle not found
+  /api/vehicles/{id}:
+    get:
+      summary: Get a vehicle by ID
+      tags: [ Vehicles ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: The requested vehicle
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+        404:
+          description: Vehicle not found
+    put:
+      summary: Update a vehicle by ID
+      tags: [ Vehicles ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverInputDto'
+      responses:
+        204:
+          description: Vehicle updated successfully
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        404:
+          description: Vehicle not found
+    delete:
+      summary: Delete a vehicle by ID
+      tags: [ Vehicles ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Vehicle deleted successfully
+        404:
+          description: Vehicle not found
 
- /api/vehicles/{id}/status:
-  put:
-   summary: Update vehicle status by ID
-   tags: [Vehicles]
-   parameters:
-    - in: path
-      name: id
-      required: true
-      schema:
-       type: integer
-      description: The ID of the vehicle to update status
-   requestBody:
-    required: true
-    content:
-     application/json:
-      schema:
-       $ref: '#/components/schemas/VehicleStatusUpdateDto'
-   responses:
-    204:
-     description: Vehicle status updated successfully
-    400:
-     description: Incorrect status value
-     content:
-      application/json:
-       schema:
-        $ref: '#/components/schemas/ValidationErrorResponse'
-    404:
-     description: Vehicle not found
+  /api/vehicles/{id}/status:
+    put:
+      summary: Update vehicle status by ID
+      tags: [ Vehicles ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The ID of the vehicle to update status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleStatusUpdateDto'
+      responses:
+        204:
+          description: Vehicle status updated successfully
+        400:
+          description: Incorrect status value
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        404:
+          description: Vehicle not found
 
 components:
- schemas:
-  Vehicle:
-   type: object
-   required:
-    - id
-    - name
-    - driver
-    - number
-    - status
-    - createdAt
-   properties:
-    id:
-     type: integer
-     example: 1
-    name:
-     type: string
-     minLength: 2
-     maxLength: 15
-     example: Tesla Model S
-    driver:
-     type: string
-     minLength: 2
-     maxLength: 20
-     example: John Doe
-    number:
-     type: integer
-     example: 12345
-    description:
-     type: string
-     nullable: true
-     minLength: 10
-     maxLength: 200
-     example: "Luxury electric vehicle"
-     default: null
-    status:
-     type: string
-     enum: [awaiting-order, on-order, on-pause]
-     example: awaiting-order
-     default: awaiting-order
-    features:
-     type: array
-     items:
-      type: string
-      enum: [pet-friendly, child-seat, wi-fi]
-     nullable: true
-     example: child-seat
-     description: "List of features. Must contain at least one value if exist."
-    createdAt:
-     type: string
-     format: date-time
-     example: "2024-02-20T12:00:00Z"
-  VehicleInputDto:
-   type: object
-   required:
-    - name
-    - driver
-    - number
-   properties:
-    name:
-     type: string
-     minLength: 2
-     maxLength: 15
-    driver:
-     type: string
-     minLength: 2
-     maxLength: 20
-    number:
-     type: integer
-    description:
-     type: string
-     nullable: true
-     minLength: 10
-     maxLength: 200
-     example: null
-     default: null
-    features:
-     type: array
-     items:
-      type: string
-      enum: [pet-friendly, child-seat, wi-fi]
-     nullable: true
-     example: child-seat
-     description: "List of features. Must contain at least one value if exist."
-  VehicleStatusUpdateDto:
-   type: object
-   required:
-    - status
-   properties:
-    status:
-     type: string
-     enum: [awaiting-order, on-order, on-pause]
-  ValidationError:
-   type: object
-   properties:
-    field:
-     type: string
-     example: "name"
-    message:
-     type: string
-     example: "Invalid name"
-  ValidationErrorResponse:
-   type: object
-   properties:
-    errorMessages:
-     type: array
-     items:
-      $ref: '#/components/schemas/ValidationError'
+  schemas:
+    Driver:
+      type: object
+      required:
+        - id
+        - name
+        - phoneNumber
+        - email
+        - status
+        - vehicleMake
+        - vehicleModel
+        - vehicleYear
+        - vehicleLicensePlate
+        - vehicleFeatures
+        - createdAt
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        phoneNumber:
+          type: string
+        email:
+          type: string
+        status:
+          type: string
+          enum: [ on-order, awaiting-order, on-pause ]
+        vehicleMake:
+          type: string
+        vehicleModel:
+          type: string
+        vehicleYear:
+          type: integer
+          example: 2025
+        vehicleLicensePlate:
+          type: string
+        vehicleDescription:
+          type: string
+          nullable: true
+        vehicleFeatures:
+          type: array
+          items:
+            type: string
+            enum: [ WiFi, ChildSeat, PetFriendly ]
+        createdAt:
+          type: string
+          format: date-time
+    DriverInputDto:
+      type: object
+      required:
+        - name
+        - phoneNumber
+        - email
+        - vehicleMake
+        - vehicleModel
+        - vehicleYear
+        - vehicleLicensePlate
+        - vehicleFeatures
+      properties:
+        name:
+          type: string
+        phoneNumber:
+          type: string
+        email:
+          type: string
+        vehicleMake:
+          type: string
+        vehicleModel:
+          type: string
+        vehicleYear:
+          type: integer
+          example: 2025
+        vehicleLicensePlate:
+          type: string
+        vehicleDescription:
+          type: string
+          nullable: true
+        vehicleFeatures:
+          type: array
+          items:
+            type: string
+            enum: [ WiFi, ChildSeat, PetFriendly ]
+    VehicleStatusUpdateDto:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [ awaiting-order, on-order, on-pause ]
+    ValidationError:
+      type: object
+      properties:
+        field:
+          type: string
+          example: "name"
+        message:
+          type: string
+          example: "Invalid name"
+    ValidationErrorResponse:
+      type: object
+      properties:
+        errorMessages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
