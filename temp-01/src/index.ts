@@ -1,19 +1,18 @@
-import { Request, Response } from 'express';
-import { initApp } from './init-app';
-import { config } from './core/config/config';
+import express from 'express';
+import { setupApp } from './setup-app';
 
-const app = initApp();
-const PORT = config.port;
+// startApp + setup
+const bootstrap = async () => {
+  const app = express();
 
-app.get('/', (req: Request, res: Response) => {
-  res.send(`Hello`);
-});
+  setupApp(app);
 
-const startApp = async () => {
+  const PORT = process.env.PORT || 5001;
+
   app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}`);
   });
   return app;
 };
 
-startApp();
+bootstrap();

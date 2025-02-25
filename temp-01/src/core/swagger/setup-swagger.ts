@@ -11,7 +11,7 @@ const swaggerOptions = {
       description: 'vehicles API',
     },
   },
-  apis: ['./src/**/*.swagger.ts'],
+  apis: ['./src/**/*.swagger.yml'],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
