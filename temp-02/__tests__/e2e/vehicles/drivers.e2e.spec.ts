@@ -8,6 +8,7 @@ import {
 import { setupApp } from '../../../src/setup-app';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { DriverInputDto } from '../../../src/drivers/dto/driver.input-dto';
+import { generateBasicAuthToken } from '../../utils/generate-admin-auth-token';
 
 describe('Driver API', () => {
   const app = express();
@@ -24,6 +25,8 @@ describe('Driver API', () => {
     vehicleDescription: null,
     vehicleFeatures: [],
   };
+
+  const adminToken = generateBasicAuthToken();
 
   beforeAll(async () => {
     await request(app)
@@ -46,6 +49,7 @@ describe('Driver API', () => {
 
     const createdDriverResponse = await request(app)
       .post('/api/drivers')
+      .set('Authorization', adminToken)
       .send(newDriver)
       .expect(HttpStatus.Created);
 
@@ -55,11 +59,13 @@ describe('Driver API', () => {
   it('should return drivers list; GET /api/drivers', async () => {
     await request(app)
       .post('/api/drivers')
+      .set('Authorization', adminToken)
       .send({ ...testDriverData, name: 'Another Driver' })
       .expect(HttpStatus.Created);
 
     const res = await request(app)
       .post('/api/drivers')
+      .set('Authorization', adminToken)
       .send({ ...testDriverData, name: 'Another Driver2' })
       .expect(HttpStatus.Created);
 
@@ -74,6 +80,7 @@ describe('Driver API', () => {
   it('should return driver by id; GET /api/drivers/:id', async () => {
     const createResponse = await request(app)
       .post('/api/drivers')
+      .set('Authorization', adminToken)
       .send({ ...testDriverData, name: 'Another Driver' })
       .expect(HttpStatus.Created);
 
@@ -91,6 +98,7 @@ describe('Driver API', () => {
   it('should update driver; PUT /api/drivers/:id', async () => {
     const createResponse = await request(app)
       .post('/api/drivers')
+      .set('Authorization', adminToken)
       .send({ ...testDriverData, name: 'Another Driver' })
       .expect(HttpStatus.Created);
 
@@ -108,6 +116,7 @@ describe('Driver API', () => {
 
     await request(app)
       .put(`/api/drivers/${createResponse.body.id}`)
+      .set('Authorization', adminToken)
       .send(driverUpdateData)
       .expect(HttpStatus.NoContent);
 
@@ -128,6 +137,7 @@ describe('Driver API', () => {
       body: { id: createdDriverId },
     } = await request(app)
       .post('/api/drivers')
+      .set('Authorization', adminToken)
       .send({ ...testDriverData, name: 'Another Driver' })
       .expect(HttpStatus.Created);
 
@@ -137,6 +147,7 @@ describe('Driver API', () => {
 
     await request(app)
       .put(`/api/drivers/${createdDriverId}/status`)
+      .set('Authorization', adminToken)
       .send(statusUpdateData)
       .expect(HttpStatus.NoContent);
 
@@ -152,11 +163,13 @@ describe('Driver API', () => {
       body: { id: createdDriverId },
     } = await request(app)
       .post('/api/drivers')
+      .set('Authorization', adminToken)
       .send({ ...testDriverData, name: 'Another Driver' })
       .expect(HttpStatus.Created);
 
     await request(app)
       .delete(`/api/drivers/${createdDriverId}`)
+      .set('Authorization', adminToken)
       .expect(HttpStatus.NoContent);
 
     const response = await request(app).get(`/api/drivers/${createdDriverId}`);

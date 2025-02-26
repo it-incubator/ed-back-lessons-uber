@@ -21,6 +21,7 @@ import {
   vehicleModelValidation,
   vehicleYearValidation,
 } from './driver.middlewares';
+import { adminMiddleware } from '../../core/middlewares/admin.middleware';
 
 export const driversRouter = Router({});
 
@@ -55,6 +56,7 @@ driversRouter
 
   .post(
     '',
+    adminMiddleware,
     nameValidation,
     phoneNumberValidation,
     emailValidation,
@@ -74,6 +76,7 @@ driversRouter
 
   .put(
     '/:id',
+    adminMiddleware,
     idValidation,
     nameValidation,
     phoneNumberValidation,
@@ -105,6 +108,7 @@ driversRouter
 
   .put(
     '/:id/status',
+    adminMiddleware,
     idValidation,
     driverStatusValidation,
     inputValidationMiddleware,
@@ -135,6 +139,7 @@ driversRouter
 
   .delete(
     '/:id',
+    adminMiddleware,
     idValidation,
     inputValidationMiddleware,
 

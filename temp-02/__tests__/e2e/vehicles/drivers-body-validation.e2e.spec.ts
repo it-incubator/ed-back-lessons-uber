@@ -7,6 +7,7 @@ import { setupApp } from '../../../src/setup-app';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import express from 'express';
 import { DriverInputDto } from '../../../src/drivers/dto/driver.input-dto';
+import { generateBasicAuthToken } from '../../utils/generate-admin-auth-token';
 
 describe('Driver API body validation check', () => {
   const app = express();
@@ -24,6 +25,8 @@ describe('Driver API body validation check', () => {
     vehicleFeatures: [VehicleFeature.ChildSeat],
   };
 
+  const adminToken = generateBasicAuthToken();
+
   beforeAll(async () => {
     await request(app)
       .delete('/api/testing/all-data')
@@ -37,6 +40,7 @@ describe('Driver API body validation check', () => {
   it(`should not create driver when incorrect body passed; POST /api/drivers'`, async () => {
     const response1 = await request(app)
       .post('/api/drivers')
+      .set('Authorization', adminToken)
       .send({
         ...correctTestDriverData,
         name: '   ',
@@ -50,6 +54,7 @@ describe('Driver API body validation check', () => {
 
     const response2 = await request(app)
       .post('/api/drivers')
+      .set('Authorization', adminToken)
       .send({
         ...correctTestDriverData,
         phoneNumber: '', // empty string
@@ -63,6 +68,7 @@ describe('Driver API body validation check', () => {
 
     const response3 = await request(app)
       .post('/api/drivers')
+      .set('Authorization', adminToken)
       .send({
         ...correctTestDriverData,
         name: 'A', // too shot
@@ -81,11 +87,13 @@ describe('Driver API body validation check', () => {
       body: { id: createdDriverId },
     } = await request(app)
       .post('/api/drivers')
+      .set('Authorization', adminToken)
       .send({ ...correctTestDriverData })
       .expect(HttpStatus.Created);
 
     const response1 = await request(app)
       .put(`/api/drivers/${createdDriverId}`)
+      .set('Authorization', adminToken)
       .send({
         ...correctTestDriverData,
         name: '   ',
@@ -99,6 +107,7 @@ describe('Driver API body validation check', () => {
 
     const response2 = await request(app)
       .put(`/api/drivers/${createdDriverId}`)
+      .set('Authorization', adminToken)
       .send({
         ...correctTestDriverData,
         phoneNumber: '', // empty string
@@ -112,6 +121,7 @@ describe('Driver API body validation check', () => {
 
     const response3 = await request(app)
       .put(`/api/drivers/${createdDriverId}`)
+      .set('Authorization', adminToken)
       .send({
         ...correctTestDriverData,
         name: 'A', //too short
@@ -137,11 +147,13 @@ describe('Driver API body validation check', () => {
       body: { id: createdDriverId },
     } = await request(app)
       .post('/api/drivers')
+      .set('Authorization', adminToken)
       .send({ ...correctTestDriverData })
       .expect(HttpStatus.Created);
 
     await request(app)
       .put(`/api/drivers/${createdDriverId}`)
+      .set('Authorization', adminToken)
       .send({
         ...correctTestDriverData,
         vehicleFeatures: [
@@ -169,6 +181,7 @@ describe('Driver API body validation check', () => {
       body: { id: createdDriverId },
     } = await request(app)
       .post('/api/drivers')
+      .set('Authorization', adminToken)
       .send({ ...correctTestDriverData })
       .expect(HttpStatus.Created);
 
@@ -178,6 +191,7 @@ describe('Driver API body validation check', () => {
 
     await request(app)
       .put(`/api/drivers/${createdDriverId}/status`)
+      .set('Authorization', adminToken)
       .send({ status: 'invalid-status' })
       .expect(HttpStatus.BadRequest);
 
