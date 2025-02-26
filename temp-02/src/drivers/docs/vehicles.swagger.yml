@@ -3,11 +3,16 @@ info:
   title: API Documentation
   version: 1.0.0
 
+securitySchemes:
+  BasicAuth:
+    type: http
+    scheme: basic
+
 tags:
   - name: Testing
     description: For API testing
-  - name: Vehicles
-    description: API for managing vehicles
+  - name: Drivers
+    description: API for managing drivers
 
 paths:
   /api/testing/all-data:
@@ -18,13 +23,13 @@ paths:
         204:
           description: All data deleted
 
-  /api/vehicles:
+  /api/drivers:
     get:
-      summary: Get a list of all vehicles
-      tags: [ Vehicles ]
+      summary: Get a list of all drivers
+      tags: [ Drivers ]
       responses:
         200:
-          description: List of all vehicles
+          description: List of all drivers
           content:
             application/json:
               schema:
@@ -32,8 +37,10 @@ paths:
                 items:
                   $ref: '#/components/schemas/Driver'
     post:
-      summary: Add a new vehicle
-      tags: [ Vehicles ]
+      summary: Add a new driver
+      tags: [ Drivers ]
+      security:
+        - BasicAuth: [ ]
       requestBody:
         required: true
         content:
@@ -42,7 +49,7 @@ paths:
               $ref: '#/components/schemas/DriverInputDto'
       responses:
         201:
-          description: The vehicle was successfully created
+          description: The driver was successfully created
           content:
             application/json:
               schema:
@@ -54,10 +61,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationErrorResponse'
 
-  /api/vehicles/{id}:
+  /api/drivers/{id}:
     get:
-      summary: Get a vehicle by ID
-      tags: [ Vehicles ]
+      summary: Get a driver by ID
+      tags: [ Drivers ]
       parameters:
         - in: path
           name: id
@@ -66,16 +73,18 @@ paths:
             type: integer
       responses:
         200:
-          description: The requested vehicle
+          description: The requested driver
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Driver'
         404:
-          description: Vehicle not found
+          description: Driver not found
     put:
-      summary: Update a vehicle by ID
-      tags: [ Vehicles ]
+      summary: Update a driver by ID
+      tags: [ Drivers ]
+      security:
+        - BasicAuth: [ ]
       parameters:
         - in: path
           name: id
@@ -90,7 +99,7 @@ paths:
               $ref: '#/components/schemas/DriverInputDto'
       responses:
         204:
-          description: Vehicle updated successfully
+          description: Driver updated successfully
         400:
           description: Validation error
           content:
@@ -98,10 +107,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationErrorResponse'
         404:
-          description: Vehicle not found
+          description: Driver not found
     delete:
-      summary: Delete a vehicle by ID
-      tags: [ Vehicles ]
+      summary: Delete a driver by ID
+      tags: [ Drivers ]
+      security:
+        - BasicAuth: [ ]
       parameters:
         - in: path
           name: id
@@ -110,21 +121,23 @@ paths:
             type: integer
       responses:
         204:
-          description: Vehicle deleted successfully
+          description: Driver deleted successfully
         404:
-          description: Vehicle not found
+          description: Driver not found
 
-  /api/vehicles/{id}/status:
+  /api/drivers/{id}/status:
     put:
-      summary: Update vehicle status by ID
-      tags: [ Vehicles ]
+      summary: Update driver status by ID
+      tags: [ Drivers ]
+      security:
+        - BasicAuth: [ ]
       parameters:
         - in: path
           name: id
           required: true
           schema:
             type: integer
-          description: The ID of the vehicle to update status
+          description: The ID of the driver to update status
       requestBody:
         required: true
         content:
@@ -133,7 +146,7 @@ paths:
               $ref: '#/components/schemas/VehicleStatusUpdateDto'
       responses:
         204:
-          description: Vehicle status updated successfully
+          description: Driver status updated successfully
         400:
           description: Incorrect status value
           content:
@@ -141,9 +154,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationErrorResponse'
         404:
-          description: Vehicle not found
+          description: Driver not found
 
 components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
   schemas:
     Driver:
       type: object
@@ -170,7 +187,6 @@ components:
           type: string
         status:
           type: string
-          enum: [ on-order, awaiting-order, on-pause ]
         vehicleMake:
           type: string
         vehicleModel:
