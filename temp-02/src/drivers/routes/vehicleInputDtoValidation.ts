@@ -1,13 +1,13 @@
 import { DriverInputDto } from '../dto/driver.input-dto';
 import { VehicleFeature } from '../types/driver';
-import { ValidationError } from '../types/validationError';
+import { ValidationErrorType } from '../types/validationError';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const vehicleInputDtoValidation = (
   data: DriverInputDto,
-): ValidationError[] => {
-  const errors: ValidationError[] = [];
+): ValidationErrorType[] => {
+  const errors: ValidationErrorType[] = [];
 
   if (
     !data.name ||

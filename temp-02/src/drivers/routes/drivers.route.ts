@@ -3,9 +3,24 @@ import { HttpStatus } from '../../core/types/http-statuses';
 
 import { DriverStatus } from '../types/driver';
 import { DriverInputDto } from '../dto/driver.input-dto';
-import { vehicleInputDtoValidation } from './vehicleInputDtoValidation';
-import { createErrorMessages } from '../../core/utils/error.utils';
+import {
+  createErrorMessages,
+  inputValidationMiddleware,
+} from '../../core/utils/error.utils';
 import { driversRepository } from '../repositories/drivers.repository';
+import {
+  driverStatusValidation,
+  emailValidation,
+  idValidation,
+  nameValidation,
+  phoneNumberValidation,
+  vehicleDescriptionValidation,
+  vehicleFeaturesValidation,
+  vehicleLicensePlateValidation,
+  vehicleMakeValidation,
+  vehicleModelValidation,
+  vehicleYearValidation,
+} from './driver.middlewares';
 
 export const driversRouter = Router({});
 
@@ -15,50 +30,63 @@ driversRouter
     res.send(drivers);
   })
 
-  .get('/:id', async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
-
-    const driver = await driversRepository.findById(id);
-
-    if (!driver) {
-      res
-        .status(HttpStatus.NotFound)
-        .send(
-          createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-        );
-
-      return;
-    }
-
-    res.send(driver);
-  })
-
-  .post('', async (req: Request<{}, {}, DriverInputDto>, res: Response) => {
-    const errors = vehicleInputDtoValidation(req.body);
-
-    if (errors.length > 0) {
-      res.status(HttpStatus.BadRequest).send(createErrorMessages(errors));
-
-      return;
-    }
-
-    const newDriver = await driversRepository.create(req.body);
-
-    res.status(HttpStatus.Created).send(newDriver);
-  })
-
-  .put(
+  .get(
     '/:id',
-    async (req: Request<{ id: string }, {}, DriverInputDto>, res: Response) => {
+    idValidation,
+    inputValidationMiddleware,
+    async (req: Request, res: Response) => {
       const id = parseInt(req.params.id);
 
-      const errors = vehicleInputDtoValidation(req.body);
+      const driver = await driversRepository.findById(id);
 
-      if (errors.length > 0) {
-        res.status(HttpStatus.BadRequest).send(createErrorMessages(errors));
+      if (!driver) {
+        res
+          .status(HttpStatus.NotFound)
+          .send(
+            createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
+          );
 
         return;
       }
+
+      res.send(driver);
+    },
+  )
+
+  .post(
+    '',
+    nameValidation,
+    phoneNumberValidation,
+    emailValidation,
+    vehicleMakeValidation,
+    vehicleModelValidation,
+    vehicleYearValidation,
+    vehicleLicensePlateValidation,
+    vehicleDescriptionValidation,
+    vehicleFeaturesValidation,
+    inputValidationMiddleware,
+    async (req: Request<{}, {}, DriverInputDto>, res: Response) => {
+      const newDriver = await driversRepository.create(req.body);
+
+      res.status(HttpStatus.Created).send(newDriver);
+    },
+  )
+
+  .put(
+    '/:id',
+    idValidation,
+    nameValidation,
+    phoneNumberValidation,
+    emailValidation,
+    vehicleMakeValidation,
+    vehicleModelValidation,
+    vehicleYearValidation,
+    vehicleLicensePlateValidation,
+    vehicleDescriptionValidation,
+    vehicleFeaturesValidation,
+    inputValidationMiddleware,
+    async (req: Request<{ id: string }, {}, DriverInputDto>, res: Response) => {
+      const id = parseInt(req.params.id);
 
       const isUpdated = await driversRepository.update(id, req.body);
 
@@ -77,19 +105,14 @@ driversRouter
 
   .put(
     '/:id/status',
+    idValidation,
+    driverStatusValidation,
+    inputValidationMiddleware,
     async (
       req: Request<{ id: string }, {}, { status: DriverStatus }>,
       res: Response,
     ) => {
       const id = parseInt(req.params.id);
-
-      if (!Object.values(DriverStatus).includes(req.body.status)) {
-        res
-          .status(HttpStatus.BadRequest)
-          .send([{ field: 'status', message: 'incorrect status' }]);
-
-        return;
-      }
 
       const isUpdated = await driversRepository.updateStatus(
         id,
@@ -110,20 +133,26 @@ driversRouter
     },
   )
 
-  .delete('/:id', async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
+  .delete(
+    '/:id',
+    idValidation,
+    inputValidationMiddleware,
 
-    const isDeleted = await driversRepository.delete(id);
+    async (req: Request, res: Response) => {
+      const id = parseInt(req.params.id);
 
-    if (!isDeleted) {
-      res
-        .status(HttpStatus.NotFound)
-        .send(
-          createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-        );
+      const isDeleted = await driversRepository.delete(id);
 
-      return;
-    }
+      if (!isDeleted) {
+        res
+          .status(HttpStatus.NotFound)
+          .send(
+            createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
+          );
 
-    res.sendStatus(HttpStatus.NoContent);
-  });
+        return;
+      }
+
+      res.sendStatus(HttpStatus.NoContent);
+    },
+  );
