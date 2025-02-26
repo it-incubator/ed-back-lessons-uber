@@ -4,7 +4,7 @@ import {
   validationResult,
 } from 'express-validator';
 import { NextFunction, Request, Response } from 'express';
-import { ValidationErrorType } from '../../drivers/types/validationError';
+import { ValidationErrorType } from '../types/validationError';
 
 export const createErrorMessages = (
   errors: ValidationErrorType[],

@@ -11,7 +11,6 @@ import { driversRepository } from '../repositories/drivers.repository';
 import {
   driverStatusValidation,
   emailValidation,
-  idValidation,
   nameValidation,
   phoneNumberValidation,
   vehicleDescriptionValidation,
@@ -22,6 +21,7 @@ import {
   vehicleYearValidation,
 } from './driver.middlewares';
 import { adminMiddleware } from '../../core/middlewares/admin.middleware';
+import { idValidation } from '../../core/middlewares/params-id.middleware';
 
 export const driversRouter = Router({});
 
