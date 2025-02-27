@@ -27,6 +27,8 @@ paths:
     get:
       summary: Get a list of all drivers
       tags: [ Drivers ]
+      security:
+        - BasicAuth: [ ]
       responses:
         200:
           description: List of all drivers
@@ -65,6 +67,8 @@ paths:
     get:
       summary: Get a driver by ID
       tags: [ Drivers ]
+      security:
+        - BasicAuth: [ ]
       parameters:
         - in: path
           name: id
@@ -187,6 +191,7 @@ components:
           type: string
         status:
           type: string
+          enum: [ on-order, awaiting-order, on-pause ]
         vehicleMake:
           type: string
         vehicleModel:
