@@ -26,13 +26,14 @@ import { idValidation } from '../../core/middlewares/params-id.middleware';
 export const driversRouter = Router({});
 
 driversRouter
-  .get('', async (req: Request, res: Response) => {
+  .get('', adminMiddleware, async (req: Request, res: Response) => {
     const drivers = await driversRepository.findAll();
     res.send(drivers);
   })
 
   .get(
     '/:id',
+    adminMiddleware,
     idValidation,
     inputValidationMiddleware,
     async (req: Request, res: Response) => {

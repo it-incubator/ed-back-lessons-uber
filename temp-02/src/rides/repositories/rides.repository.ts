@@ -20,6 +20,7 @@ export const ridesRepository = {
     }
 
     ride.status = newStatus;
+
     return true;
   },
 
