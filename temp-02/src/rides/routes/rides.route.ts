@@ -1,12 +1,12 @@
 import { Request, Response, Router } from 'express';
 import {
   createErrorMessages,
-  inputValidationMiddleware,
-} from '../../core/utils/error.utils';
+  inputValidationResultMiddleware,
+} from '../../core/middlewares/validation/input-validtion-result.middleware';
 import { HttpStatus } from '../../core/types/http-statuses';
-import { adminMiddleware } from '../../core/middlewares/admin.middleware';
+import { superAdminGuardMiddleware } from '../../accounts/middlewares/super-admin.guard-middleware';
 import { ridesRepository } from '../repositories/rides.repository';
-import { idValidation } from '../../core/middlewares/params-id.middleware';
+import { idValidation } from '../../core/middlewares/validation/params-id.validation-middleware';
 import {
   clientNameValidation,
   currencyValidation,
@@ -23,16 +23,20 @@ import { DriverStatus } from '../../drivers/types/driver';
 
 export const ridesRoute = Router({});
 
-ridesRoute.get('', adminMiddleware, async (req: Request, res: Response) => {
-  const rides = await ridesRepository.findAll();
-  res.send(rides);
-});
+ridesRoute.get(
+  '',
+  superAdminGuardMiddleware,
+  async (req: Request, res: Response) => {
+    const rides = await ridesRepository.findAll();
+    res.send(rides);
+  },
+);
 
 ridesRoute.get(
   '/:id',
-  adminMiddleware,
+  superAdminGuardMiddleware,
   idValidation,
-  inputValidationMiddleware,
+  inputValidationResultMiddleware,
   async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
 
@@ -53,14 +57,14 @@ ridesRoute.get(
 );
 ridesRoute.post(
   '',
-  adminMiddleware,
+  superAdminGuardMiddleware,
   clientNameValidation,
   driverIdValidation,
   priceValidation,
   currencyValidation,
   startAddressValidation,
   endAddressValidation,
-  inputValidationMiddleware,
+  inputValidationResultMiddleware,
   async (req: Request<{}, {}, RideInputDto>, res: Response) => {
     const driverId = req.body.driverId;
 
@@ -86,16 +90,17 @@ ridesRoute.post(
 
 ridesRoute.put(
   '/:id/status',
-  adminMiddleware,
+  superAdminGuardMiddleware,
   idValidation,
   rideStatusValidation,
-  inputValidationMiddleware,
+  inputValidationResultMiddleware,
   async (
     req: Request<{ id: string }, {}, { status: RideStatus }>,
     res: Response,
   ) => {
     const id = parseInt(req.params.id);
 
+    //TODO: Promise.all почему репо асинхронный?
     const ride = await ridesRepository.findById(id);
 
     if (!ride) {
@@ -120,6 +125,7 @@ ridesRoute.put(
       return;
     }
 
+    //TODO: Promise.all
     const isRideUpdated = await ridesRepository.updateStatus(
       id,
       req.body.status,

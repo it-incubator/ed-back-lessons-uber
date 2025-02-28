@@ -1,6 +1,7 @@
 import { body } from 'express-validator';
 import { Currency, RideStatus } from '../types/ride';
 
+//TODO: по аналогии с driver.input-dto.validation-middleware
 export const rideStatusValidation = body('status')
   .isString()
   .withMessage('status should be string')

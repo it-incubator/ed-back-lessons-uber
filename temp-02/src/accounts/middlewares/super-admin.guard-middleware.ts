@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-import { HttpStatus } from '../types/http-statuses';
+import { HttpStatus } from '../../core/types/http-statuses';
 
 export const ADMIN_USERNAME = 'admin';
 export const ADMIN_PASSWORD = 'qwerty';
 
-export const adminMiddleware = (
+export const superAdminGuardMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -27,11 +27,10 @@ export const adminMiddleware = (
 
   const [username, password] = credentials.split(':');
 
-  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-    next(); // Успешная авторизация, продолжаем
+  if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
+    res.sendStatus(HttpStatus.Unauthorized);
     return;
   }
 
-  res.sendStatus(HttpStatus.Unauthorized);
-  return;
+  next(); // Успешная авторизация, продолжаем
 };

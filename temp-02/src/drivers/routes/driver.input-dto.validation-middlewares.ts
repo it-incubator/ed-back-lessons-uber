@@ -1,21 +1,21 @@
 import { body } from 'express-validator';
 import { DriverStatus, VehicleFeature } from '../types/driver';
 
-export const nameValidation = body('name')
+const nameValidation = body('name')
   .isString()
   .withMessage('name should be string')
   .trim()
   .isLength({ min: 2, max: 15 })
   .withMessage('Length of name is not correct');
 
-export const phoneNumberValidation = body('phoneNumber')
+const phoneNumberValidation = body('phoneNumber')
   .isString()
   .withMessage('phoneNumber should be string')
   .trim()
   .isLength({ min: 8, max: 15 })
   .withMessage('Length of phoneNumber is not correct');
 
-export const emailValidation = body('email')
+const emailValidation = body('email')
   .isString()
   .withMessage('email should be string')
   .trim()
@@ -23,14 +23,14 @@ export const emailValidation = body('email')
   .withMessage('Length of email is not correct')
   .isEmail();
 
-export const vehicleMakeValidation = body('vehicleMake')
+const vehicleMakeValidation = body('vehicleMake')
   .isString()
   .withMessage('vehicleMake should be string')
   .trim()
   .isLength({ min: 3, max: 100 })
   .withMessage('Length of vehicleMake is not correct');
 
-export const vehicleModelValidation = body('vehicleModel')
+const vehicleModelValidation = body('vehicleModel')
   .isString()
   .withMessage('vehicleModel should be string')
   .trim()
@@ -39,18 +39,18 @@ export const vehicleModelValidation = body('vehicleModel')
 
 // Получаем текущий год
 const currentYear = new Date().getFullYear();
-export const vehicleYearValidation = body('vehicleYear')
+const vehicleYearValidation = body('vehicleYear')
   .isInt({ min: 1980, max: currentYear })
   .withMessage('vehicleModel should be real year');
 
-export const vehicleLicensePlateValidation = body('vehicleLicensePlate')
+const vehicleLicensePlateValidation = body('vehicleLicensePlate')
   .isString()
   .withMessage('vehicleLicensePlate should be string')
   .trim()
   .isLength({ min: 6, max: 10 })
   .withMessage('Length of vehicleLicensePlate is not correct');
 
-export const vehicleDescriptionValidation = body('vehicleDescription')
+const vehicleDescriptionValidation = body('vehicleDescription')
   .optional({ nullable: true }) // Позволяет значению быть null
   .isString()
   .withMessage('vehicleDescription should be string')
@@ -58,7 +58,7 @@ export const vehicleDescriptionValidation = body('vehicleDescription')
   .isLength({ min: 10, max: 200 })
   .withMessage('Length of vehicleDescription is not correct');
 
-export const vehicleFeaturesValidation = body('vehicleFeatures')
+const vehicleFeaturesValidation = body('vehicleFeatures')
   .isArray()
   .withMessage('vehicleFeatures should be array')
   .optional() // Позволяет массиву быть пустым
@@ -77,10 +77,22 @@ export const vehicleFeaturesValidation = body('vehicleFeatures')
     return true;
   });
 
-export const driverStatusValidation = body('status')
+export const driverStatusInputDtoValidation = body('status')
   .isString()
   .withMessage('status should be string')
   .trim()
   .isLength({ min: 1 })
   .isIn(Object.values(DriverStatus))
   .withMessage('Invalid status value');
+
+export const driverInputDtoValidation = [
+  nameValidation,
+  phoneNumberValidation,
+  emailValidation,
+  vehicleMakeValidation,
+  vehicleModelValidation,
+  vehicleYearValidation,
+  vehicleLicensePlateValidation,
+  vehicleDescriptionValidation,
+  vehicleFeaturesValidation,
+];

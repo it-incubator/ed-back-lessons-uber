@@ -4,7 +4,8 @@ import {
   validationResult,
 } from 'express-validator';
 import { NextFunction, Request, Response } from 'express';
-import { ValidationErrorType } from '../types/validationError';
+import { ValidationErrorType } from '../../types/validationError';
+import {HttpStatus} from "../../types/http-statuses";
 
 export const createErrorMessages = (
   errors: ValidationErrorType[],
@@ -21,7 +22,7 @@ const formatErrors = (error: ValidationError): ValidationErrorType => {
   };
 };
 
-export const inputValidationMiddleware = (
+export const inputValidationResultMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -34,6 +35,6 @@ export const inputValidationMiddleware = (
     next();
     return;
   }
-  res.status(400).json({ errorMessages: errors });
+  res.status(HttpStatus.BadRequest).json({ errorMessages: errors });
   return;
 };
