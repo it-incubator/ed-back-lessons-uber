@@ -82,10 +82,24 @@ ridesRoute.put(
   (req: Request<{ id: string }, {}, { status: RideStatus }>, res: Response) => {
     const id = parseInt(req.params.id);
 
-    //TODO: Promise.all почему репо асинхронный?
+    //Нельзя поменять статус на 'in-progress' без подробностей заказа
+    //для этого есть эндпоинт в ridesRoute
+    if (req.body.status === RideStatus.InProgress) {
+      res
+        .status(HttpStatus.BadRequest)
+        .send(
+          createErrorMessages([
+            { field: 'status', message: 'Details of the order are required' },
+          ]),
+        );
+
+      return;
+    }
+
     const ride = ridesRepository.findById(id);
 
-    if (!ride) {
+    //Если поездки не существует или она уже закончена или отменена, то изменить ей статус нельзя
+    if (!ride || ride.status !== RideStatus.InProgress) {
       res
         .status(HttpStatus.NotFound)
         .send(
@@ -107,14 +121,11 @@ ridesRoute.put(
       return;
     }
 
-    //TODO: Promise.all
     const isRideUpdated = ridesRepository.updateStatus(id, req.body.status);
 
     const isDriverUpdated = driversRepository.updateStatus(
       ride.driverId,
-      req.body.status === RideStatus.InProgress
-        ? DriverStatus.OnOrder
-        : DriverStatus.AwaitingOrder,
+      DriverStatus.AwaitingOrder,
     );
 
     if (!isRideUpdated || !isDriverUpdated) {

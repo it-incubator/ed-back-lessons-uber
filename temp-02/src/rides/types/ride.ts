@@ -4,7 +4,7 @@ export enum Currency {
 }
 
 export enum RideStatus {
-  InProgress = 'in progress',
+  InProgress = 'in-progress',
   Canceled = 'canceled',
   Finished = 'finished',
 }
