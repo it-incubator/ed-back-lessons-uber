@@ -1,7 +1,6 @@
 import { body } from 'express-validator';
 import { Currency, RideStatus } from '../types/ride';
 
-//TODO: по аналогии с driver.input-dto.validation-middleware
 export const rideStatusValidation = body('status')
   .isString()
   .withMessage('status should be string')
@@ -45,3 +44,12 @@ export const endAddressValidation = body('endAddress')
   .withMessage('endAddress should be string')
   .trim()
   .isLength({ min: 10, max: 200 });
+
+export const rideInputDtoValidation = [
+  clientNameValidation,
+  driverIdValidation,
+  priceValidation,
+  currencyValidation,
+  startAddressValidation,
+  endAddressValidation,
+];

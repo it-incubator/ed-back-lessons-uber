@@ -8,14 +8,9 @@ import { superAdminGuardMiddleware } from '../../accounts/middlewares/super-admi
 import { ridesRepository } from '../repositories/rides.repository';
 import { idValidation } from '../../core/middlewares/validation/params-id.validation-middleware';
 import {
-  clientNameValidation,
-  currencyValidation,
-  driverIdValidation,
-  endAddressValidation,
-  priceValidation,
+  rideInputDtoValidation,
   rideStatusValidation,
-  startAddressValidation,
-} from './ride.middleware';
+} from './ride.input-dto.validation-middleware';
 import { RideStatus } from '../types/ride';
 import { RideInputDto } from '../dto/ride-input.dto';
 import { driversRepository } from '../../drivers/repositories/drivers.repository';
@@ -23,24 +18,20 @@ import { DriverStatus } from '../../drivers/types/driver';
 
 export const ridesRoute = Router({});
 
-ridesRoute.get(
-  '',
-  superAdminGuardMiddleware,
-  async (req: Request, res: Response) => {
-    const rides = await ridesRepository.findAll();
-    res.send(rides);
-  },
-);
+ridesRoute.use(superAdminGuardMiddleware);
+ridesRoute.get('', (req: Request, res: Response) => {
+  const rides = ridesRepository.findAll();
+  res.send(rides);
+});
 
 ridesRoute.get(
   '/:id',
-  superAdminGuardMiddleware,
   idValidation,
   inputValidationResultMiddleware,
-  async (req: Request, res: Response) => {
+  (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
 
-    const ride = await ridesRepository.findById(id);
+    const ride = ridesRepository.findById(id);
 
     if (!ride) {
       res
@@ -57,18 +48,12 @@ ridesRoute.get(
 );
 ridesRoute.post(
   '',
-  superAdminGuardMiddleware,
-  clientNameValidation,
-  driverIdValidation,
-  priceValidation,
-  currencyValidation,
-  startAddressValidation,
-  endAddressValidation,
+  rideInputDtoValidation,
   inputValidationResultMiddleware,
-  async (req: Request<{}, {}, RideInputDto>, res: Response) => {
+  (req: Request<{}, {}, RideInputDto>, res: Response) => {
     const driverId = req.body.driverId;
 
-    const driver = await driversRepository.findById(driverId);
+    const driver = driversRepository.findById(driverId);
 
     if (!driver || driver.status !== DriverStatus.AwaitingOrder) {
       res
@@ -80,9 +65,9 @@ ridesRoute.post(
       return;
     }
 
-    const newRide = await ridesRepository.create(driver, req.body);
+    const newRide = ridesRepository.create(driver, req.body);
 
-    await driversRepository.updateStatus(driver.id, DriverStatus.OnOrder);
+    driversRepository.updateStatus(driver.id, DriverStatus.OnOrder);
 
     res.status(HttpStatus.Created).send(newRide);
   },
@@ -90,18 +75,15 @@ ridesRoute.post(
 
 ridesRoute.put(
   '/:id/status',
-  superAdminGuardMiddleware,
+
   idValidation,
   rideStatusValidation,
   inputValidationResultMiddleware,
-  async (
-    req: Request<{ id: string }, {}, { status: RideStatus }>,
-    res: Response,
-  ) => {
+  (req: Request<{ id: string }, {}, { status: RideStatus }>, res: Response) => {
     const id = parseInt(req.params.id);
 
     //TODO: Promise.all почему репо асинхронный?
-    const ride = await ridesRepository.findById(id);
+    const ride = ridesRepository.findById(id);
 
     if (!ride) {
       res
@@ -113,7 +95,7 @@ ridesRoute.put(
       return;
     }
 
-    const driver = await driversRepository.findById(ride.driverId);
+    const driver = driversRepository.findById(ride.driverId);
 
     if (!driver) {
       res
@@ -126,12 +108,9 @@ ridesRoute.put(
     }
 
     //TODO: Promise.all
-    const isRideUpdated = await ridesRepository.updateStatus(
-      id,
-      req.body.status,
-    );
+    const isRideUpdated = ridesRepository.updateStatus(id, req.body.status);
 
-    const isDriverUpdated = await driversRepository.updateStatus(
+    const isDriverUpdated = driversRepository.updateStatus(
       ride.driverId,
       req.body.status === RideStatus.InProgress
         ? DriverStatus.OnOrder

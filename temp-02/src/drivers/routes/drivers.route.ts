@@ -21,8 +21,8 @@ export const driversRouter = Router({});
 driversRouter.use(superAdminGuardMiddleware);
 
 driversRouter
-  .get('', async (req: Request, res: Response) => {
-    const drivers = await driversRepository.findAll();
+  .get('', (req: Request, res: Response) => {
+    const drivers = driversRepository.findAll();
     res.send(drivers);
   })
 
@@ -30,10 +30,10 @@ driversRouter
     '/:id',
     idValidation,
     inputValidationResultMiddleware,
-    async (req: Request, res: Response) => {
+    (req: Request, res: Response) => {
       const id = parseInt(req.params.id);
 
-      const driver = await driversRepository.findById(id);
+      const driver = driversRepository.findById(id);
 
       if (!driver) {
         res
@@ -53,8 +53,8 @@ driversRouter
     '',
     driverInputDtoValidation,
     inputValidationResultMiddleware,
-    async (req: Request<{}, {}, DriverInputDto>, res: Response) => {
-      const newDriver = await driversRepository.create(req.body);
+    (req: Request<{}, {}, DriverInputDto>, res: Response) => {
+      const newDriver = driversRepository.create(req.body);
 
       res.status(HttpStatus.Created).send(newDriver);
     },
@@ -65,10 +65,10 @@ driversRouter
     idValidation,
     driverInputDtoValidation,
     inputValidationResultMiddleware,
-    async (req: Request<{ id: string }, {}, DriverInputDto>, res: Response) => {
+    (req: Request<{ id: string }, {}, DriverInputDto>, res: Response) => {
       const id = parseInt(req.params.id);
 
-      const isUpdated = await driversRepository.update(id, req.body);
+      const isUpdated = driversRepository.update(id, req.body);
 
       if (!isUpdated) {
         res
@@ -88,17 +88,14 @@ driversRouter
     idValidation,
     driverStatusInputDtoValidation,
     inputValidationResultMiddleware,
-    async (
+    (
       req: Request<{ id: string }, {}, { status: DriverStatus }>,
       res: Response,
     ) => {
       const id = parseInt(req.params.id);
 
       //нельзя обновить статус у водителя на "on-order" без маршрута. tests
-      const isUpdated = await driversRepository.updateStatus(
-        id,
-        req.body.status,
-      );
+      const isUpdated = driversRepository.updateStatus(id, req.body.status);
 
       if (!isUpdated) {
         res
@@ -119,10 +116,10 @@ driversRouter
     idValidation,
     inputValidationResultMiddleware,
 
-    async (req: Request, res: Response) => {
+    (req: Request, res: Response) => {
       const id = parseInt(req.params.id);
 
-      const isDeleted = await driversRepository.delete(id);
+      const isDeleted = driversRepository.delete(id);
 
       if (!isDeleted) {
         res
