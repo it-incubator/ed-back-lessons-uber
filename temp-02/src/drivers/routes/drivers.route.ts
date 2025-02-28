@@ -94,7 +94,45 @@ driversRouter
     ) => {
       const id = parseInt(req.params.id);
 
-      //нельзя обновить статус у водителя на "on-order" без маршрута. tests
+      const driver = driversRepository.findById(id);
+
+      if (!driver) {
+        res
+          .status(HttpStatus.NotFound)
+          .send(
+            createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
+          );
+
+        return;
+      }
+
+      // Если у водителя сейчас есть заказ, то поменять ему статус нельзя
+      if (driver.status === DriverStatus.OnOrder) {
+        res
+          .status(HttpStatus.BadRequest)
+          .send(
+            createErrorMessages([
+              { field: 'status', message: 'The driver is currently on a job' },
+            ]),
+          );
+
+        return;
+      }
+
+      //Нельзя поменять статус на 'on-order' без подробностей заказа
+      //для этого есть эндпоинт в ridesRoute
+      if (req.body.status === DriverStatus.OnOrder) {
+        res
+          .status(HttpStatus.BadRequest)
+          .send(
+            createErrorMessages([
+              { field: 'status', message: 'Details of the order are required' },
+            ]),
+          );
+
+        return;
+      }
+
       const isUpdated = driversRepository.updateStatus(id, req.body.status);
 
       if (!isUpdated) {
@@ -118,6 +156,31 @@ driversRouter
 
     (req: Request, res: Response) => {
       const id = parseInt(req.params.id);
+
+      const driver = driversRepository.findById(id);
+
+      if (!driver) {
+        res
+          .status(HttpStatus.NotFound)
+          .send(
+            createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
+          );
+
+        return;
+      }
+
+      // Если у водителя сейчас есть заказ, то удалить его нельзя
+      if (driver.status === DriverStatus.OnOrder) {
+        res
+          .status(HttpStatus.BadRequest)
+          .send(
+            createErrorMessages([
+              { field: 'status', message: 'The driver is currently on a job' },
+            ]),
+          );
+
+        return;
+      }
 
       const isDeleted = driversRepository.delete(id);
 
