@@ -24,7 +24,7 @@ export const ridesRepository = {
     return true;
   },
 
-  create(driver: Driver, dto: RideInputDto): Ride {
+  createInProgressRide(driver: Driver, dto: RideInputDto): Ride {
     const newRide: Ride = {
       id: db.rides.length ? db.rides[db.rides.length - 1].id + 1 : 1,
       clientName: dto.clientName,

@@ -65,7 +65,7 @@ ridesRoute.post(
       return;
     }
 
-    const newRide = ridesRepository.create(driver, req.body);
+    const newRide = ridesRepository.createInProgressRide(driver, req.body);
 
     driversRepository.updateStatus(driver.id, DriverStatus.OnOrder);
 
@@ -82,9 +82,8 @@ ridesRoute.put(
   (req: Request<{ id: string }, {}, { status: RideStatus }>, res: Response) => {
     const id = parseInt(req.params.id);
 
-    //Нельзя поменять статус на 'in-progress' без подробностей заказа
-    //для этого есть эндпоинт в ridesRoute
-    if (req.body.status === RideStatus.InProgress) {
+    //Нельзя поменять статус на 'in-progress'. Статус 'in-progress' устанавливается только при создании поезки
+    if (req.body.status !== RideStatus.Finished) {
       res
         .status(HttpStatus.BadRequest)
         .send(
@@ -98,8 +97,7 @@ ridesRoute.put(
 
     const ride = ridesRepository.findById(id);
 
-    //Если поездки не существует или она уже закончена или отменена, то изменить ей статус нельзя
-    if (!ride || ride.status !== RideStatus.InProgress) {
+    if (!ride) {
       res
         .status(HttpStatus.NotFound)
         .send(
