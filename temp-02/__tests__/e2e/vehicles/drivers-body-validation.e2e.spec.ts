@@ -33,11 +33,12 @@ describe('Driver API body validation check', () => {
       .expect(HttpStatus.NoContent);
   });
 
-  afterAll(() => {
-    //app.stop(); todo: check if must stop express app after tests
-  });
-
   it(`should not create driver when incorrect body passed; POST /api/drivers'`, async () => {
+    await request(app)
+      .post('/api/drivers')
+      .send(correctTestDriverData)
+      .expect(HttpStatus.Unauthorized);
+
     const response1 = await request(app)
       .post('/api/drivers')
       .set('Authorization', adminToken)
@@ -78,7 +79,9 @@ describe('Driver API body validation check', () => {
     expect(response3.body.errorMessages).toHaveLength(1);
 
     // check что никто не создался
-    const response = await request(app).get('/api/drivers');
+    const response = await request(app)
+      .get('/api/drivers')
+      .set('Authorization', adminToken);
     expect(response.body).toHaveLength(0);
   });
 
@@ -130,9 +133,9 @@ describe('Driver API body validation check', () => {
 
     expect(response3.body.errorMessages).toHaveLength(1);
 
-    const driverResponse = await request(app).get(
-      `/api/drivers/${createdDriverId}`,
-    );
+    const driverResponse = await request(app)
+      .get(`/api/drivers/${createdDriverId}`)
+      .set('Authorization', adminToken);
 
     expect(driverResponse.body).toEqual({
       ...correctTestDriverData,
@@ -164,9 +167,9 @@ describe('Driver API body validation check', () => {
       })
       .expect(HttpStatus.BadRequest);
 
-    const driverResponse = await request(app).get(
-      `/api/drivers/${createdDriverId}`,
-    );
+    const driverResponse = await request(app)
+      .get(`/api/drivers/${createdDriverId}`)
+      .set('Authorization', adminToken);
 
     expect(driverResponse.body).toEqual({
       ...correctTestDriverData,
@@ -185,7 +188,7 @@ describe('Driver API body validation check', () => {
       .send({ ...correctTestDriverData })
       .expect(HttpStatus.Created);
 
-    const driverBeforUpdateResponse = await request(app).get(
+    const driverBeforeUpdateResponse = await request(app).get(
       `/api/drivers/${createdDriverId}`,
     );
 
@@ -200,7 +203,7 @@ describe('Driver API body validation check', () => {
     );
 
     expect(driverAfterUpdateResponse.body.status).toBe(
-      driverBeforUpdateResponse.body.status,
+      driverBeforeUpdateResponse.body.status,
     );
   });
 });

@@ -20,6 +20,7 @@ export const ridesRepository = {
     }
 
     ride.status = newStatus;
+    ride.updatedAt = new Date();
 
     return true;
   },

@@ -15,12 +15,8 @@ export const clientNameValidation = body('clientName')
   .isLength({ min: 3, max: 100 });
 
 export const driverIdValidation = body('driverId')
-  .isString()
-  .withMessage('ID must be a string')
-  .isLength({ min: 1 })
-  .withMessage('ID must not be empty')
-  .isNumeric()
-  .withMessage('ID must be a numeric string');
+  .isInt({ gt: 0 })
+  .withMessage('ID must be a number');
 
 export const priceValidation = body('price')
   .isFloat({ gt: 0 }) // Проверка, что цена - это число больше 0

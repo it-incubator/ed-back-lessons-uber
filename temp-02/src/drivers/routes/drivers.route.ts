@@ -45,7 +45,7 @@ driversRouter
         return;
       }
 
-      res.send(driver);
+      res.status(HttpStatus.Ok).send(driver);
     },
   )
 

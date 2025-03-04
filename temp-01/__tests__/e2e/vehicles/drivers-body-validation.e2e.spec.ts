@@ -30,10 +30,6 @@ describe('Driver API body validation check', () => {
       .expect(HttpStatus.NoContent);
   });
 
-  afterAll(() => {
-    //app.stop(); todo: check if must stop express app after tests
-  });
-
   it(`should not create driver when incorrect body passed; POST /api/drivers'`, async () => {
     const response1 = await request(app)
       .post('/api/drivers')

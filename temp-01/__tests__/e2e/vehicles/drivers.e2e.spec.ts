@@ -58,7 +58,7 @@ describe('Driver API', () => {
       .send({ ...testDriverData, name: 'Another Driver' })
       .expect(HttpStatus.Created);
 
-    const res = await request(app)
+    await request(app)
       .post('/api/drivers')
       .send({ ...testDriverData, name: 'Another Driver2' })
       .expect(HttpStatus.Created);

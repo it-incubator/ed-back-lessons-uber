@@ -63,7 +63,7 @@ describe('Driver API', () => {
       .send({ ...testDriverData, name: 'Another Driver' })
       .expect(HttpStatus.Created);
 
-    const res = await request(app)
+    await request(app)
       .post('/api/drivers')
       .set('Authorization', adminToken)
       .send({ ...testDriverData, name: 'Another Driver2' })
@@ -71,6 +71,7 @@ describe('Driver API', () => {
 
     const response = await request(app)
       .get('/api/drivers')
+      .set('Authorization', adminToken)
       .expect(HttpStatus.Ok);
 
     expect(response.body).toBeInstanceOf(Array);
@@ -86,6 +87,7 @@ describe('Driver API', () => {
 
     const getResponse = await request(app)
       .get(`/api/drivers/${createResponse.body.id}`)
+      .set('Authorization', adminToken)
       .expect(HttpStatus.Ok);
 
     expect(getResponse.body).toEqual({
@@ -120,9 +122,9 @@ describe('Driver API', () => {
       .send(driverUpdateData)
       .expect(HttpStatus.NoContent);
 
-    const driverResponse = await request(app).get(
-      `/api/drivers/${createResponse.body.id}`,
-    );
+    const driverResponse = await request(app)
+      .get(`/api/drivers/${createResponse.body.id}`)
+      .set('Authorization', adminToken);
 
     expect(driverResponse.body).toEqual({
       ...driverUpdateData,
@@ -142,7 +144,7 @@ describe('Driver API', () => {
       .expect(HttpStatus.Created);
 
     const statusUpdateData = {
-      status: DriverStatus.OnOrder,
+      status: DriverStatus.OnPause,
     };
 
     await request(app)
@@ -151,11 +153,11 @@ describe('Driver API', () => {
       .send(statusUpdateData)
       .expect(HttpStatus.NoContent);
 
-    const driverResponse = await request(app).get(
-      `/api/drivers/${createdDriverId}`,
-    );
+    const driverResponse = await request(app)
+      .get(`/api/drivers/${createdDriverId}`)
+      .set('Authorization', adminToken);
 
-    expect(driverResponse.body.status).toBe(DriverStatus.OnOrder);
+    expect(driverResponse.body.status).toBe(DriverStatus.OnPause);
   });
 
   it('DELETE /api/drivers/:id and check after NOT FOUND', async () => {
@@ -172,7 +174,9 @@ describe('Driver API', () => {
       .set('Authorization', adminToken)
       .expect(HttpStatus.NoContent);
 
-    const response = await request(app).get(`/api/drivers/${createdDriverId}`);
+    const response = await request(app)
+      .get(`/api/drivers/${createdDriverId}`)
+      .set('Authorization', adminToken);
     expect(response.status).toBe(HttpStatus.NotFound);
   });
 });

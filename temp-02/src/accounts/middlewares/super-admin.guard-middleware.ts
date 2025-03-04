@@ -16,7 +16,7 @@ export const superAdminGuardMiddleware = (
     return;
   }
 
-  const [authType, token] = auth.split(' ');
+  const [authType, token] = auth.split(' '); //admin:qwerty
 
   if (authType !== 'Basic') {
     res.sendStatus(HttpStatus.Unauthorized);
