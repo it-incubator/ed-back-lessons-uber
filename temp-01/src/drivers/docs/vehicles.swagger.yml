@@ -137,7 +137,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VehicleStatusUpdateDto'
+              $ref: '#/components/schemas/DriverStatusInputDto'
       responses:
         204:
           description: Driver status updated successfully
@@ -207,14 +207,14 @@ components:
         vehicleDescription:
           type: string
           nullable: true
-          description: "A description of the vehicle, including any notable features or conditions."
+          description: "A description of the vehicle, including any notable features or conditions"
           example: "A spacious SUV with leather seats and a sunroof."
         vehicleFeatures:
           type: array
           items:
             type: string
             enum: [ wi-fi, child-seat, pet-friendly ]
-          description: "Features available in the vehicle. Choose from the provided options."
+          description: "Features available in the vehicle. Choose from the provided options"
           example: [ "wi-fi", "pet-friendly" ]
         createdAt:
           type: string
@@ -273,7 +273,7 @@ components:
             enum: [ wi-fi, child-seat, pet-friendly ]
           description: "Features available in the vehicle. Choose from the provided options"
           example: [ "wi-fi", "pet-friendly" ]
-    VehicleStatusUpdateDto:
+    DriverStatusInputDto:
       type: object
       required:
         - status
