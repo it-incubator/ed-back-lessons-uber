@@ -38,7 +38,7 @@ export const ridesRepository = {
       status: RideStatus.InProgress,
       createdAt: new Date(),
       updatedAt: null,
-      address: {
+      addresses: {
         start: dto.startAddress,
         end: dto.endAddress,
       },

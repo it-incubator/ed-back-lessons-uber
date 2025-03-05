@@ -35,12 +35,13 @@ describe('Rides API', () => {
   };
 
   const adminToken = generateBasicAuthToken();
-
+  //todo beforeAll
   beforeEach(async () => {
     await request(app)
       .delete('/api/testing/all-data')
       .expect(HttpStatus.NoContent);
 
+    //todo create helper to createDriver
     const createdDriverResponse = await request(app)
       .post('/api/drivers')
       .set('Authorization', adminToken)

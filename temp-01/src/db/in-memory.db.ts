@@ -21,7 +21,7 @@ export const db = {
       name: 'Tom Rider',
       phoneNumber: '123-456-7890',
       email: 'tom.rider@example.com',
-      status: DriverStatus.AwaitingOrder,
+      status: DriverStatus.Online,
       vehicleMake: 'Ford',
       vehicleModel: 'Mustang Shelby GT',
       vehicleYear: 2019,

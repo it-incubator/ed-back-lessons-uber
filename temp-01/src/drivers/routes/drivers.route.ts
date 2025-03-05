@@ -46,7 +46,7 @@ driversRouter
       name: req.body.name,
       phoneNumber: req.body.phoneNumber,
       email: req.body.email,
-      status: DriverStatus.AwaitingOrder,
+      status: DriverStatus.Online,
       vehicleMake: req.body.vehicleMake,
       vehicleModel: req.body.vehicleModel,
       vehicleYear: req.body.vehicleYear,

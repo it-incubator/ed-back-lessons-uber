@@ -17,7 +17,7 @@ export const driversRepository = {
       name: dto.name,
       phoneNumber: dto.phoneNumber,
       email: dto.email,
-      status: DriverStatus.AwaitingOrder,
+      status: DriverStatus.Online,
       vehicleMake: dto.vehicleMake,
       vehicleModel: dto.vehicleModel,
       vehicleYear: dto.vehicleYear,

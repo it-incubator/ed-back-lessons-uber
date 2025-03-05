@@ -12,9 +12,9 @@ import {
   rideStatusValidation,
 } from './ride.input-dto.validation-middleware';
 import { RideStatus } from '../types/ride';
-import { RideInputDto } from '../dto/ride-input.dto';
 import { driversRepository } from '../../drivers/repositories/drivers.repository';
 import { DriverStatus } from '../../drivers/types/driver';
+import { createRideHandler } from './handlers/create-ride.handler';
 
 export const ridesRoute = Router({});
 
@@ -50,27 +50,7 @@ ridesRoute.post(
   '',
   rideInputDtoValidation,
   inputValidationResultMiddleware,
-  (req: Request<{}, {}, RideInputDto>, res: Response) => {
-    const driverId = req.body.driverId;
-
-    const driver = driversRepository.findById(driverId);
-
-    if (!driver || driver.status !== DriverStatus.AwaitingOrder) {
-      res
-        .status(HttpStatus.NotFound)
-        .send(
-          createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-        );
-
-      return;
-    }
-
-    const newRide = ridesRepository.createInProgressRide(driver, req.body);
-
-    driversRepository.updateStatus(driver.id, DriverStatus.OnOrder);
-
-    res.status(HttpStatus.Created).send(newRide);
-  },
+  createRideHandler,
 );
 
 ridesRoute.put(
@@ -95,6 +75,7 @@ ridesRoute.put(
       return;
     }
 
+    //todo fix
     const ride = ridesRepository.findById(id);
 
     if (!ride) {
@@ -123,7 +104,7 @@ ridesRoute.put(
 
     const isDriverUpdated = driversRepository.updateStatus(
       ride.driverId,
-      DriverStatus.AwaitingOrder,
+      DriverStatus.Online,
     );
 
     if (!isRideUpdated || !isDriverUpdated) {

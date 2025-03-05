@@ -124,7 +124,7 @@ describe('Driver API body validation check', () => {
       ...correctTestDriverData,
       id: createdDriverId,
       createdAt: expect.any(String),
-      status: DriverStatus.AwaitingOrder,
+      status: DriverStatus.Online,
     });
   });
 
@@ -156,7 +156,7 @@ describe('Driver API body validation check', () => {
       ...correctTestDriverData,
       id: createdDriverId,
       createdAt: expect.any(String),
-      status: DriverStatus.AwaitingOrder,
+      status: DriverStatus.Online,
     });
   });
 

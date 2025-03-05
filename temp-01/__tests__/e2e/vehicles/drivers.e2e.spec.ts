@@ -49,7 +49,7 @@ describe('Driver API', () => {
       .send(newDriver)
       .expect(HttpStatus.Created);
 
-    expect(createdDriverResponse.body.status).toBe(DriverStatus.AwaitingOrder);
+    expect(createdDriverResponse.body.status).toBe(DriverStatus.Online);
   });
 
   it('should return drivers list; GET /api/drivers', async () => {
@@ -119,7 +119,7 @@ describe('Driver API', () => {
       ...driverUpdateData,
       id: createResponse.body.id,
       createdAt: expect.any(String),
-      status: DriverStatus.AwaitingOrder,
+      status: DriverStatus.Online,
     });
   });
 

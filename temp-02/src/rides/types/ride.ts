@@ -7,7 +7,7 @@ export enum RideStatus {
   InProgress = 'in-progress',
   Finished = 'finished',
 }
-
+// todo trip
 export type Ride = {
   id: number;
   clientName: string;
@@ -20,7 +20,7 @@ export type Ride = {
   status: RideStatus;
   createdAt: Date;
   updatedAt: Date | null;
-  address: {
+  addresses: {
     start: string;
     end: string;
   };
