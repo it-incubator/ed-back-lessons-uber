@@ -17,6 +17,8 @@ paths:
     get:
       summary: Get a list of all rides
       tags: [ Rides ]
+      security:
+        - BasicAuth: [ ]
       responses:
         200:
           description: List of all rides
@@ -55,6 +57,8 @@ paths:
     get:
       summary: Get a ride by ID
       tags: [ Rides ]
+      security:
+        - BasicAuth: [ ]
       parameters:
         - in: path
           name: id

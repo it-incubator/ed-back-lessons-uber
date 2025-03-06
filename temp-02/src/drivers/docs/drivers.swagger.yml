@@ -7,14 +7,6 @@ securitySchemes:
   BasicAuth:
     type: http
     scheme: basic
-    description: "Basic Authentication requires to send the username and password encoded in Base64 in the Authorization header"
-    parameters:
-      username:
-        description: "The username for authentication"
-        example: "admin"
-      password:
-        description: "The password for authentication"
-        example: "qwerty"
 
 tags:
   - name: Testing
