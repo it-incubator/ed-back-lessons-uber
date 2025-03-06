@@ -53,7 +53,7 @@ describe('Driver API', () => {
       .send(newDriver)
       .expect(HttpStatus.Created);
 
-    expect(createdDriverResponse.body.status).toBe(DriverStatus.AwaitingOrder);
+    expect(createdDriverResponse.body.status).toBe(DriverStatus.Online);
   });
 
   it('should return drivers list; GET /api/drivers', async () => {
@@ -130,7 +130,7 @@ describe('Driver API', () => {
       ...driverUpdateData,
       id: createResponse.body.id,
       createdAt: expect.any(String),
-      status: DriverStatus.AwaitingOrder,
+      status: DriverStatus.Online,
     });
   });
 
@@ -144,7 +144,7 @@ describe('Driver API', () => {
       .expect(HttpStatus.Created);
 
     const statusUpdateData = {
-      status: DriverStatus.OnPause,
+      status: DriverStatus.Offline,
     };
 
     await request(app)
@@ -157,7 +157,7 @@ describe('Driver API', () => {
       .get(`/api/drivers/${createdDriverId}`)
       .set('Authorization', adminToken);
 
-    expect(driverResponse.body.status).toBe(DriverStatus.OnPause);
+    expect(driverResponse.body.status).toBe(DriverStatus.Offline);
   });
 
   it('DELETE /api/drivers/:id and check after NOT FOUND', async () => {
