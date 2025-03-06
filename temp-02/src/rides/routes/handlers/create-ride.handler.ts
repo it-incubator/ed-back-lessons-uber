@@ -16,7 +16,7 @@ export function createRideHandler(
 
   if (!driver || driver.status !== DriverStatus.Online) {
     res
-      .status(HttpStatus.NotFound)
+      .status(HttpStatus.BadRequest)
       .send(
         createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
       );
