@@ -11,21 +11,8 @@ export function updateRideStatusHandler(
   res: Response,
 ) {
   const id = parseInt(req.params.id);
+  const newStatus = req.body.status;
 
-  //Нельзя поменять статус на 'in-progress'. Статус 'in-progress' устанавливается только при создании поезки
-  if (req.body.status !== RideStatus.Finished) {
-    res
-      .status(HttpStatus.BadRequest)
-      .send(
-        createErrorMessages([
-          { field: 'status', message: 'Details of the order are required' },
-        ]),
-      );
-
-    return;
-  }
-
-  //todo fix
   const ride = ridesRepository.findById(id);
 
   if (!ride) {
@@ -36,31 +23,44 @@ export function updateRideStatusHandler(
     return;
   }
 
-  const driver = driversRepository.findById(ride.driverId);
-
-  if (!driver) {
+  //Если поездка уже завершена, то обновить статус ей нельзя
+  if (ride.status === RideStatus.Finished) {
     res
-      .status(HttpStatus.NotFound)
-      .send(
-        createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-      );
+      .status(HttpStatus.BadRequest)
+      .send(createErrorMessages([{ field: 'id', message: 'Ride not found' }]));
 
     return;
   }
 
-  const isRideUpdated = ridesRepository.updateStatus(id, req.body.status);
+  if (ride.status !== newStatus) {
+    const driver = driversRepository.findById(ride.driverId);
 
-  const isDriverUpdated = driversRepository.updateStatus(
-    ride.driverId,
-    DriverStatus.Online,
-  );
+    if (!driver) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
+        );
 
-  if (!isRideUpdated || !isDriverUpdated) {
-    res
-      .status(HttpStatus.NotFound)
-      .send(createErrorMessages([{ field: 'id', message: 'Ride not found' }]));
+      return;
+    }
 
-    return;
+    const isRideUpdated = ridesRepository.updateStatus(id, newStatus);
+
+    const isDriverUpdated = driversRepository.updateStatus(
+      ride.driverId,
+      DriverStatus.Online,
+    );
+
+    if (!isRideUpdated || !isDriverUpdated) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: 'id', message: 'Ride not found' }]),
+        );
+
+      return;
+    }
   }
 
   res.sendStatus(HttpStatus.NoContent);
