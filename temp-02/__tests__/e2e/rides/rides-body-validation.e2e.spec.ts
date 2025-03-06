@@ -1,30 +1,15 @@
 import express from 'express';
 import request from 'supertest';
 import { setupApp } from '../../../src/setup-app';
-import { DriverInputDto } from '../../../src/drivers/dto/driver.input-dto';
-import { Driver, VehicleFeature } from '../../../src/drivers/types/driver';
 import { generateBasicAuthToken } from '../../utils/generate-admin-auth-token';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { RideInputDto } from '../../../src/rides/dto/ride-input.dto';
 import { Currency, RideStatus } from '../../../src/rides/types/ride';
+import { createDriver } from '../../utils/create-driver';
 
 describe('Rides API body validation check', () => {
   const app = express();
   setupApp(app);
-
-  const testDriverData: DriverInputDto = {
-    name: 'Valentin',
-    phoneNumber: '123-456-7890',
-    email: 'valentin@example.com',
-    vehicleMake: 'BMW',
-    vehicleModel: 'X5',
-    vehicleYear: 2021,
-    vehicleLicensePlate: 'ABC-123',
-    vehicleDescription: 'Some description',
-    vehicleFeatures: [VehicleFeature.ChildSeat],
-  };
-
-  let driver: Driver;
 
   const adminToken = generateBasicAuthToken();
 
@@ -36,18 +21,10 @@ describe('Rides API body validation check', () => {
     endAddress: '456 Elm St, Shelbyville, IL',
   };
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await request(app)
       .delete('/api/testing/all-data')
       .expect(HttpStatus.NoContent);
-
-    const createdDriverResponse = await request(app)
-      .post('/api/drivers')
-      .set('Authorization', adminToken)
-      .send(testDriverData)
-      .expect(HttpStatus.Created);
-
-    driver = createdDriverResponse.body;
   });
 
   it(`should not create ride when incorrect body passed; POST /api/rides'`, async () => {
@@ -56,7 +33,7 @@ describe('Rides API body validation check', () => {
       .send(testRideData)
       .expect(HttpStatus.Unauthorized);
 
-    const response1 = await request(app)
+    const invalidDataSet1 = await request(app)
       .post('/api/rides')
       .set('Authorization', adminToken)
       .send({
@@ -70,9 +47,9 @@ describe('Rides API body validation check', () => {
       })
       .expect(HttpStatus.BadRequest);
 
-    expect(response1.body.errorMessages).toHaveLength(6);
+    expect(invalidDataSet1.body.errorMessages).toHaveLength(6);
 
-    const response2 = await request(app)
+    const invalidDataSet2 = await request(app)
       .post('/api/rides')
       .set('Authorization', adminToken)
       .send({
@@ -85,28 +62,30 @@ describe('Rides API body validation check', () => {
       })
       .expect(HttpStatus.BadRequest);
 
-    expect(response2.body.errorMessages).toHaveLength(5);
+    expect(invalidDataSet2.body.errorMessages).toHaveLength(5);
 
-    const response3 = await request(app)
+    const invalidDataSet3 = await request(app)
       .post('/api/rides')
       .set('Authorization', adminToken)
       .send({
         ...testRideData,
         driverId: 5000, //driver should exist
       })
-      .expect(HttpStatus.NotFound);
+      .expect(HttpStatus.BadRequest);
 
-    expect(response3.body.errorMessages).toHaveLength(1);
+    expect(invalidDataSet3.body.errorMessages).toHaveLength(1);
 
     // check что никто не создался
-    const response = await request(app)
+    const riderListResponse = await request(app)
       .get('/api/rides')
       .set('Authorization', adminToken);
 
-    expect(response.body).toHaveLength(0);
+    expect(riderListResponse.body).toHaveLength(0);
   });
 
   it('should not update ride status when incorrect status passed; PUT /api/rides/:id/status', async () => {
+    const driver = await createDriver(app);
+
     const createdRideResponse = await request(app)
       .post('/api/rides')
       .set('Authorization', adminToken)

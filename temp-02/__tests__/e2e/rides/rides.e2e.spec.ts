@@ -1,30 +1,16 @@
 import request from 'supertest';
 import express from 'express';
 import { setupApp } from '../../../src/setup-app';
-import { DriverInputDto } from '../../../src/drivers/dto/driver.input-dto';
 import { generateBasicAuthToken } from '../../utils/generate-admin-auth-token';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
-import { Driver, DriverStatus } from '../../../src/drivers/types/driver';
+import { DriverStatus } from '../../../src/drivers/types/driver';
 import { RideInputDto } from '../../../src/rides/dto/ride-input.dto';
 import { Currency, RideStatus } from '../../../src/rides/types/ride';
+import { createDriver } from '../../utils/create-driver';
 
 describe('Rides API', () => {
   const app = express();
   setupApp(app);
-
-  const testDriverData: DriverInputDto = {
-    name: 'Feodor',
-    phoneNumber: '987-654-3210',
-    email: 'feodor@example.com',
-    vehicleMake: 'Audi',
-    vehicleModel: 'A6',
-    vehicleYear: 2020,
-    vehicleLicensePlate: 'XYZ-456',
-    vehicleDescription: null,
-    vehicleFeatures: [],
-  };
-
-  let driver: Driver;
 
   const testRideData: Partial<RideInputDto> = {
     clientName: 'Bob',
@@ -35,23 +21,16 @@ describe('Rides API', () => {
   };
 
   const adminToken = generateBasicAuthToken();
-  //todo beforeAll
-  beforeEach(async () => {
+
+  beforeAll(async () => {
     await request(app)
       .delete('/api/testing/all-data')
       .expect(HttpStatus.NoContent);
-
-    //todo create helper to createDriver
-    const createdDriverResponse = await request(app)
-      .post('/api/drivers')
-      .set('Authorization', adminToken)
-      .send(testDriverData)
-      .expect(HttpStatus.Created);
-
-    driver = createdDriverResponse.body;
   });
 
   it('should create ride; POST /api/rides', async () => {
+    const driver = await createDriver(app);
+
     const createdRideResponse = await request(app)
       .post('/api/rides')
       .set('Authorization', adminToken)
@@ -62,13 +41,10 @@ describe('Rides API', () => {
   });
 
   it('should return rides list; GET /api/rides', async () => {
-    const createdDriverResponse2 = await request(app)
-      .post('/api/drivers')
-      .set('Authorization', adminToken)
-      .send({ ...testDriverData, name: 'Sam', email: 'sam@example.com' })
-      .expect(HttpStatus.Created);
-
-    const driver2 = createdDriverResponse2.body;
+    const driver2 = await createDriver(app, {
+      name: 'Sam',
+      email: 'sam@example.com',
+    });
 
     await request(app)
       .post('/api/rides')
@@ -76,16 +52,18 @@ describe('Rides API', () => {
       .send({ ...testRideData, driverId: driver2.id })
       .expect(HttpStatus.Created);
 
-    const response = await request(app)
+    const rideListResponse = await request(app)
       .get('/api/rides')
       .set('Authorization', adminToken)
       .expect(HttpStatus.Ok);
 
-    expect(response.body).toBeInstanceOf(Array);
-    expect(response.body).toHaveLength(2);
+    expect(rideListResponse.body).toBeInstanceOf(Array);
+    expect(rideListResponse.body).toHaveLength(2);
   });
 
   it('should return ride by id; GET /api/rides/:id', async () => {
+    const driver = await createDriver(app);
+
     const createResponse = await request(app)
       .post('/api/rides')
       .set('Authorization', adminToken)
@@ -105,6 +83,8 @@ describe('Rides API', () => {
   });
 
   it('should update ride status; PUT /api/rides/:id/status', async () => {
+    const driver = await createDriver(app);
+
     const createResponse = await request(app)
       .post('/api/rides')
       .set('Authorization', adminToken)
@@ -133,7 +113,7 @@ describe('Rides API', () => {
 
     expect(driverResponse.body).toEqual({
       ...driver,
-      status: DriverStatus.AwaitingOrder,
+      status: DriverStatus.Online,
     });
   });
 });

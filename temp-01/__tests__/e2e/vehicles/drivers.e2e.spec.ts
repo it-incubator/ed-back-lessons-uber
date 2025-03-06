@@ -63,12 +63,12 @@ describe('Driver API', () => {
       .send({ ...testDriverData, name: 'Another Driver2' })
       .expect(HttpStatus.Created);
 
-    const response = await request(app)
+    const driverListResponse = await request(app)
       .get('/api/drivers')
       .expect(HttpStatus.Ok);
 
-    expect(response.body).toBeInstanceOf(Array);
-    expect(response.body.length).toBeGreaterThanOrEqual(2);
+    expect(driverListResponse.body).toBeInstanceOf(Array);
+    expect(driverListResponse.body.length).toBeGreaterThanOrEqual(2);
   });
 
   it('should return driver by id; GET /api/drivers/:id', async () => {
@@ -159,7 +159,9 @@ describe('Driver API', () => {
       .delete(`/api/drivers/${createdDriverId}`)
       .expect(HttpStatus.NoContent);
 
-    const response = await request(app).get(`/api/drivers/${createdDriverId}`);
-    expect(response.status).toBe(HttpStatus.NotFound);
+    const driverResponse = await request(app).get(
+      `/api/drivers/${createdDriverId}`,
+    );
+    expect(driverResponse.status).toBe(HttpStatus.NotFound);
   });
 });
