@@ -4,10 +4,15 @@ import { HttpStatus } from '../../../core/types/http-statuses';
 
 import { driversRepository } from '../../repositories/drivers.repository';
 import { createErrorMessages } from '../../../core/middlewares/validation/input-validtion-result.middleware';
-import { availableStatusesForChange } from '../../dto/change-driver-activity.dto';
+import { ChangeDriverStatusInputDto } from '../../dto/change-driver-activity.input-dto';
+
+export const availableStatusesForChange = [
+  DriverStatus.Offline,
+  DriverStatus.Online,
+];
 
 export function changeDriverActivityHandler(
-  req: Request<{ id: string }, {}, { status: DriverStatus }>,
+  req: Request<{ id: string }, {}, { status: ChangeDriverStatusInputDto }>,
   res: Response,
 ) {
   const id = parseInt(req.params.id);
@@ -19,9 +24,7 @@ export function changeDriverActivityHandler(
     res
       .status(HttpStatus.BadRequest)
       .send(
-        createErrorMessages([
-          { field: 'status', message: 'Details of the order are required' },
-        ]),
+        createErrorMessages([{ field: 'status', message: 'incorrect status' }]),
       );
 
     return;

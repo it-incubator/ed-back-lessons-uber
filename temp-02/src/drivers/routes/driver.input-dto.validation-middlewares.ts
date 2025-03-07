@@ -1,6 +1,7 @@
 import { body } from 'express-validator';
 import { VehicleFeature } from '../types/driver';
-import { availableStatusesForChange } from '../dto/change-driver-activity.dto';
+
+import { availableStatusesForChange } from './handlers/change-driver-activity.handler';
 
 const nameValidation = body('name')
   .isString()
