@@ -6,13 +6,11 @@ import { ridesRepository } from '../../repositories/rides.repository';
 import { driversRepository } from '../../../drivers/repositories/drivers.repository';
 import { DriverStatus } from '../../../drivers/types/driver';
 
-export function updateRideStatusHandler(
-  req: Request<{ id: string }, {}, { status: RideStatus }>,
+export function finishRideHandler(
+  req: Request<{ id: string }, {}, {}>,
   res: Response,
 ) {
   const id = parseInt(req.params.id);
-  const newStatus = req.body.status;
-
   const ride = ridesRepository.findById(id);
 
   if (!ride) {
@@ -32,35 +30,19 @@ export function updateRideStatusHandler(
     return;
   }
 
-  if (ride.status !== newStatus) {
-    const driver = driversRepository.findById(ride.driverId);
+  const isRideUpdated = ridesRepository.updateStatus(id, RideStatus.Finished);
 
-    if (!driver) {
-      res
-        .status(HttpStatus.NotFound)
-        .send(
-          createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-        );
+  const isDriverUpdated = driversRepository.updateStatus(
+    ride.driverId,
+    DriverStatus.Online,
+  );
 
-      return;
-    }
+  if (!isRideUpdated || !isDriverUpdated) {
+    res
+      .status(HttpStatus.NotFound)
+      .send(createErrorMessages([{ field: 'id', message: 'Ride not found' }]));
 
-    const isRideUpdated = ridesRepository.updateStatus(id, newStatus);
-
-    const isDriverUpdated = driversRepository.updateStatus(
-      ride.driverId,
-      DriverStatus.Online,
-    );
-
-    if (!isRideUpdated || !isDriverUpdated) {
-      res
-        .status(HttpStatus.NotFound)
-        .send(
-          createErrorMessages([{ field: 'id', message: 'Ride not found' }]),
-        );
-
-      return;
-    }
+    return;
   }
 
   res.sendStatus(HttpStatus.NoContent);

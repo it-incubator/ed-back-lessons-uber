@@ -77,9 +77,9 @@ paths:
         404:
           description: Ride not found
 
-  /api/rides/{id}/status:
+  /api/rides/{id}/finish:
     put:
-      summary: Update ride status by ID
+      summary: Finish ride by ID
       tags: [ Rides ]
       security:
         - BasicAuth: [ ]
@@ -91,24 +91,11 @@ paths:
           schema:
             type: integer
             example: 5
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - status
-              properties:
-                status:
-                  type: string
-                  enum: [ "finished" ]
-                  example: "finished"
       responses:
         204:
-          description: Ride status updated successfully
+          description: Ride finished successfully
         400:
-          description: Incorrect status value or ride has already been finished
+          description: The ride has already been finished
           content:
             application/json:
               schema:

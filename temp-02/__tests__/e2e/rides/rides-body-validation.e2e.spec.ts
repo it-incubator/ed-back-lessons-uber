@@ -6,6 +6,7 @@ import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { RideInputDto } from '../../../src/rides/dto/ride-input.dto';
 import { Currency, RideStatus } from '../../../src/rides/types/ride';
 import { createDriver } from '../../utils/create-driver';
+import { DriverStatus } from '../../../src/drivers/types/driver';
 
 describe('Rides API body validation check', () => {
   const app = express();
@@ -83,7 +84,7 @@ describe('Rides API body validation check', () => {
     expect(riderListResponse.body).toHaveLength(0);
   });
 
-  it('should not update ride status when incorrect status passed; PUT /api/rides/:id/status', async () => {
+  it('should not update ride status when ride already been finished; PUT /api/rides/:id/status', async () => {
     const driver = await createDriver(app);
 
     const createdRideResponse = await request(app)
@@ -94,28 +95,26 @@ describe('Rides API body validation check', () => {
 
     const createdRideId = createdRideResponse.body.id;
 
-    const rideBeforeUpdateResponse = await request(app)
+    await request(app)
+      .put(`/api/rides/${createdRideId}/finish`)
+      .set('Authorization', adminToken)
+      .expect(HttpStatus.NoContent);
+
+    await request(app)
+      .put(`/api/rides/${createdRideId}/finish`)
+      .set('Authorization', adminToken)
+      .expect(HttpStatus.BadRequest);
+
+    const rideAfterUpdateResponse = await request(app)
       .get(`/api/rides/${createdRideId}`)
-      .send(testRideData);
+      .set('Authorization', adminToken);
 
-    await request(app)
-      .put(`/api/drivers/${createdRideId}/status`)
-      .set('Authorization', adminToken)
-      .send({ status: 'invalid-status' }) //status not in RideStatus
-      .expect(HttpStatus.BadRequest);
+    expect(rideAfterUpdateResponse.body.status).toBe(RideStatus.Finished);
 
-    await request(app)
-      .put(`/api/drivers/${createdRideId}/status`)
-      .set('Authorization', adminToken)
-      .send({ status: RideStatus.InProgress }) //status not RideStatus.Finished
-      .expect(HttpStatus.BadRequest);
+    const driverAfterUpdateResponse = await request(app)
+      .get(`/api/drivers/${createdRideId}`)
+      .set('Authorization', adminToken);
 
-    const rideAfterUpdateResponse = await request(app).get(
-      `/api/drivers/${createdRideId}`,
-    );
-
-    expect(rideAfterUpdateResponse.body.status).toBe(
-      rideBeforeUpdateResponse.body.status,
-    );
+    expect(driverAfterUpdateResponse.body.status).toBe(DriverStatus.Online);
   });
 });

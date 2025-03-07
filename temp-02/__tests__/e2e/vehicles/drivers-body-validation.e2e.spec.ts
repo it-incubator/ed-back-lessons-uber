@@ -193,7 +193,7 @@ describe('Driver API body validation check', () => {
     );
 
     await request(app)
-      .put(`/api/drivers/${createdDriverId}/status`)
+      .put(`/api/drivers/${createdDriverId}/activity`)
       .set('Authorization', adminToken)
       .send({ status: 'invalid-status' })
       .expect(HttpStatus.BadRequest);

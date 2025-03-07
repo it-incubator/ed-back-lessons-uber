@@ -82,7 +82,7 @@ describe('Rides API', () => {
     });
   });
 
-  it('should update ride status; PUT /api/rides/:id/status', async () => {
+  it('should finish ride; PUT /api/rides/:id/finish', async () => {
     const driver = await createDriver(app);
 
     const createResponse = await request(app)
@@ -92,9 +92,8 @@ describe('Rides API', () => {
       .expect(HttpStatus.Created);
 
     await request(app)
-      .put(`/api/rides/${createResponse.body.id}/status`)
+      .put(`/api/rides/${createResponse.body.id}/finish`)
       .set('Authorization', adminToken)
-      .send({ status: RideStatus.Finished })
       .expect(HttpStatus.NoContent);
 
     const rideResponse = await request(app)

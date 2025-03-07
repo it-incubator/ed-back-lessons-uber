@@ -2,14 +2,11 @@ import { Router } from 'express';
 import { inputValidationResultMiddleware } from '../../core/middlewares/validation/input-validtion-result.middleware';
 import { superAdminGuardMiddleware } from '../../accounts/middlewares/super-admin.guard-middleware';
 import { idValidation } from '../../core/middlewares/validation/params-id.validation-middleware';
-import {
-  rideInputDtoValidation,
-  rideStatusValidation,
-} from './ride.input-dto.validation-middleware';
+import { rideInputDtoValidation } from './ride.input-dto.validation-middleware';
 import { createRideHandler } from './handlers/create-ride.handler';
 import { getRideListHandler } from './handlers/get-ride-list.handler';
 import { getRideHandler } from './handlers/get-ride.handler';
-import { updateRideStatusHandler } from './handlers/update-ride-status.handler';
+import { finishRideHandler } from './handlers/finish-ride.handler';
 
 export const ridesRoute = Router({});
 
@@ -31,10 +28,8 @@ ridesRoute.post(
 );
 
 ridesRoute.put(
-  '/:id/status',
-
+  '/:id/finish',
   idValidation,
-  rideStatusValidation,
   inputValidationResultMiddleware,
-  updateRideStatusHandler,
+  finishRideHandler,
 );

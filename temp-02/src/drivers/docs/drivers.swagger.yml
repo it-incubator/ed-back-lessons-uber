@@ -141,9 +141,9 @@ paths:
         404:
           description: "Driver not found"
 
-  /api/drivers/{id}/status:
+  /api/drivers/{id}/activity:
     put:
-      summary: "Update driver status by ID"
+      summary: "Update driver activity by ID"
       tags: [ Drivers ]
       security:
         - BasicAuth: [ ]
@@ -154,13 +154,13 @@ paths:
           schema:
             type: integer
             example: 2
-          description: "The ID of the driver to update status"
+          description: "The ID of the driver to update activity"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DriverStatusInputDto'
+              $ref: '#/components/schemas/DriverActivityInputDto'
       responses:
         204:
           description: "Driver status updated successfully"
@@ -300,14 +300,14 @@ components:
             enum: [ wi-fi, child-seat, pet-friendly ]
           description: "Features available in the vehicle. Choose from the provided options"
           example: [ "wi-fi", "pet-friendly" ]
-    DriverStatusInputDto:
+    DriverActivityInputDto:
       type: object
       required:
         - status
       properties:
         status:
           type: string
-          enum: [ on-order, online, offline ]
+          enum: [ online, offline ]
           description: "The current status of the driver"
           example: "online"
     ValidationError:

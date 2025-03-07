@@ -4,12 +4,28 @@ import { HttpStatus } from '../../../core/types/http-statuses';
 
 import { driversRepository } from '../../repositories/drivers.repository';
 import { createErrorMessages } from '../../../core/middlewares/validation/input-validtion-result.middleware';
+import { availableStatusesForChange } from '../../dto/change-driver-activity.dto';
 
-export function updateDriverStatusHandler(
+export function changeDriverActivityHandler(
   req: Request<{ id: string }, {}, { status: DriverStatus }>,
   res: Response,
 ) {
   const id = parseInt(req.params.id);
+
+  /*
+   * Можно менять только доступные статусы для изменения 'online'и 'offline'
+   */
+  if (!availableStatusesForChange.includes(req.body.status)) {
+    res
+      .status(HttpStatus.BadRequest)
+      .send(
+        createErrorMessages([
+          { field: 'status', message: 'Details of the order are required' },
+        ]),
+      );
+
+    return;
+  }
 
   const driver = driversRepository.findById(id);
 
@@ -30,22 +46,6 @@ export function updateDriverStatusHandler(
       .send(
         createErrorMessages([
           { field: 'status', message: 'The driver is currently on a job' },
-        ]),
-      );
-
-    return;
-  }
-
-  /*
-   * Нельзя поменять статус на 'on-order' без подробностей заказа
-   * для этого есть эндпоинт в ridesRoute
-   */
-  if (req.body.status === DriverStatus.OnOrder) {
-    res
-      .status(HttpStatus.BadRequest)
-      .send(
-        createErrorMessages([
-          { field: 'status', message: 'Details of the order are required' },
         ]),
       );
 

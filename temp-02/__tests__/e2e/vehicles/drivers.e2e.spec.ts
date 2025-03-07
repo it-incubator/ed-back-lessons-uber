@@ -148,7 +148,7 @@ describe('Driver API', () => {
     };
 
     await request(app)
-      .put(`/api/drivers/${createdDriverId}/status`)
+      .put(`/api/drivers/${createdDriverId}/activity`)
       .set('Authorization', adminToken)
       .send(statusUpdateData)
       .expect(HttpStatus.NoContent);
