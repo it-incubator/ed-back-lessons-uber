@@ -32,17 +32,7 @@ export function deleteDriverHandler(req: Request, res: Response) {
     return;
   }
 
-  const isDeleted = driversRepository.delete(id);
-
-  if (!isDeleted) {
-    res
-      .status(HttpStatus.NotFound)
-      .send(
-        createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-      );
-
-    return;
-  }
+  driversRepository.delete(id);
 
   res.sendStatus(HttpStatus.NoContent);
 }

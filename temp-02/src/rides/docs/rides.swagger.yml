@@ -77,8 +77,8 @@ paths:
         404:
           description: Ride not found
 
-  /api/rides/{id}/finish:
-    put:
+  /api/rides/{id}/actions/finish:
+    post:
       summary: Finish ride by ID
       tags: [ Rides ]
       security:

@@ -4,56 +4,42 @@ import { setupApp } from '../../../src/setup-app';
 import { generateBasicAuthToken } from '../../utils/generate-admin-auth-token';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { DriverStatus } from '../../../src/drivers/types/driver';
-import { RideInputDto } from '../../../src/rides/dto/ride-input.dto';
-import { Currency, RideStatus } from '../../../src/rides/types/ride';
-import { createDriver } from '../../utils/create-driver';
+import { RideStatus } from '../../../src/rides/types/ride';
+import { createDriver } from '../../utils/drivers/create-driver';
+import { clearDb } from '../../utils/clear-db';
+import { createRide } from '../../utils/rides/create-ride';
+import { RIDES_PATH } from '../../../src/core/paths/paths';
+import { getRideById } from '../../utils/rides/get-ride-by-id';
+import { getDriverById } from '../../utils/drivers/get-driver-by-id';
 
 describe('Rides API', () => {
   const app = express();
   setupApp(app);
 
-  const testRideData: Partial<RideInputDto> = {
-    clientName: 'Bob',
-    price: 200,
-    currency: Currency.USD,
-    startAddress: '123 Main St, Springfield, IL',
-    endAddress: '456 Elm St, Shelbyville, IL',
-  };
-
   const adminToken = generateBasicAuthToken();
 
   beforeAll(async () => {
-    await request(app)
-      .delete('/api/testing/all-data')
-      .expect(HttpStatus.NoContent);
+    await clearDb(app);
   });
 
-  it('should create ride; POST /api/rides', async () => {
+  it('✅ should create ride; POST /api/rides', async () => {
     const driver = await createDriver(app);
 
-    const createdRideResponse = await request(app)
-      .post('/api/rides')
-      .set('Authorization', adminToken)
-      .send({ ...testRideData, driverId: driver.id })
-      .expect(HttpStatus.Created);
+    const createdRide = await createRide(app, { driverId: driver.id });
 
-    expect(createdRideResponse.body.status).toBe(RideStatus.InProgress);
+    expect(createdRide.status).toBe(RideStatus.InProgress);
   });
 
-  it('should return rides list; GET /api/rides', async () => {
+  it('✅ should return rides list; GET /api/rides', async () => {
     const driver2 = await createDriver(app, {
       name: 'Sam',
       email: 'sam@example.com',
     });
 
-    await request(app)
-      .post('/api/rides')
-      .set('Authorization', adminToken)
-      .send({ ...testRideData, driverId: driver2.id })
-      .expect(HttpStatus.Created);
+    await createRide(app, { driverId: driver2.id });
 
     const rideListResponse = await request(app)
-      .get('/api/rides')
+      .get(RIDES_PATH)
       .set('Authorization', adminToken)
       .expect(HttpStatus.Ok);
 
@@ -61,56 +47,45 @@ describe('Rides API', () => {
     expect(rideListResponse.body).toHaveLength(2);
   });
 
-  it('should return ride by id; GET /api/rides/:id', async () => {
+  it('✅ should return ride by id; GET /api/rides/:id', async () => {
     const driver = await createDriver(app);
 
-    const createResponse = await request(app)
-      .post('/api/rides')
-      .set('Authorization', adminToken)
-      .send({ ...testRideData, driverId: driver.id })
-      .expect(HttpStatus.Created);
+    const createdRide = await createRide(app, {
+      driverId: driver.id,
+    });
 
-    const getResponse = await request(app)
-      .get(`/api/rides/${createResponse.body.id}`)
-      .set('Authorization', adminToken)
-      .expect(HttpStatus.Ok);
+    const getRide = await getRideById(app, createdRide.id);
 
-    expect(getResponse.body).toEqual({
-      ...createResponse.body,
+    expect(getRide).toEqual({
+      ...createdRide,
       id: expect.any(Number),
       createdAt: expect.any(String),
     });
   });
 
-  it('should finish ride; PUT /api/rides/:id/finish', async () => {
+  it('✅ should finish ride; POST /api/rides/:id/actions/finish', async () => {
     const driver = await createDriver(app);
 
-    const createResponse = await request(app)
-      .post('/api/rides')
-      .set('Authorization', adminToken)
-      .send({ ...testRideData, driverId: driver.id })
-      .expect(HttpStatus.Created);
+    const createdRide = await createRide(app, {
+      driverId: driver.id,
+    });
 
     await request(app)
-      .put(`/api/rides/${createResponse.body.id}/finish`)
+      .post(`${RIDES_PATH}/${createdRide.id}/actions/finish`)
       .set('Authorization', adminToken)
       .expect(HttpStatus.NoContent);
 
-    const rideResponse = await request(app)
-      .get(`/api/rides/${createResponse.body.id}`)
-      .set('Authorization', adminToken);
+    const getRide = await getRideById(app, createdRide.id);
 
-    expect(rideResponse.body).toEqual({
-      ...createResponse.body,
+    expect(getRide).toEqual({
+      ...createdRide,
       status: RideStatus.Finished,
       updatedAt: expect.any(String),
     });
 
-    const driverResponse = await request(app)
-      .get(`/api/drivers/${createResponse.body.driverId}`)
-      .set('Authorization', adminToken);
+    const getDriver = await getDriverById(app, driver.id);
 
-    expect(driverResponse.body).toEqual({
+    expect(getDriver).toEqual({
       ...driver,
       status: DriverStatus.Online,
     });

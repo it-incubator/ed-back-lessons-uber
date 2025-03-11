@@ -25,25 +25,17 @@ export function finishRideHandler(
   if (ride.status === RideStatus.Finished) {
     res
       .status(HttpStatus.BadRequest)
-      .send(createErrorMessages([{ field: 'id', message: 'Ride not found' }]));
+      .send(createErrorMessages([{ field: 'id', message: 'Ride not found' }])); //todo fix error text
 
     return;
   }
 
-  const isRideUpdated = ridesRepository.updateStatus(id, RideStatus.Finished);
+  ridesRepository.updateStatus(id, RideStatus.Finished);
 
-  const isDriverUpdated = driversRepository.updateStatus(
+  driversRepository.updateStatus(
     ride.driverId,
     DriverStatus.Online,
   );
-
-  if (!isRideUpdated || !isDriverUpdated) {
-    res
-      .status(HttpStatus.NotFound)
-      .send(createErrorMessages([{ field: 'id', message: 'Ride not found' }]));
-
-    return;
-  }
 
   res.sendStatus(HttpStatus.NoContent);
 }

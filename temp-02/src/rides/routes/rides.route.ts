@@ -20,15 +20,16 @@ ridesRoute.get(
   inputValidationResultMiddleware,
   getRideHandler,
 );
+
 ridesRoute.post(
   '',
   rideInputDtoValidation,
   inputValidationResultMiddleware,
   createRideHandler,
 );
-
-ridesRoute.put(
-  '/:id/finish',
+//todo fix in swagger and README
+ridesRoute.post(
+  '/:id/actions/finish',
   idValidation,
   inputValidationResultMiddleware,
   finishRideHandler,

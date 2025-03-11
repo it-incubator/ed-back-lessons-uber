@@ -52,25 +52,25 @@ export const driversRepository = {
     return true;
   },
 
-  updateStatus(id: number, newStatus: DriverStatus): boolean {
+  updateStatus(id: number, newStatus: DriverStatus): void {
     const driver = db.drivers.find((d) => d.id === id);
 
     if (!driver) {
-      return false;
+      throw new Error('Driver not exist');
     }
 
     driver.status = newStatus;
-    return true;
+    return
   },
 
-  delete(id: number): boolean {
+  delete(id: number): void {
     const index = db.drivers.findIndex((v) => v.id === id);
 
     if (index === -1) {
-      return false;
+     throw new Error('Driver not exist');
     }
 
     db.drivers.splice(index, 1);
-    return true;
+    return;
   },
 };

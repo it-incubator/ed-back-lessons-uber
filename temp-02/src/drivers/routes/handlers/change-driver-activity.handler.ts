@@ -55,17 +55,9 @@ export function changeDriverActivityHandler(
     return;
   }
 
-  const isUpdated = driversRepository.updateStatus(id, req.body.status);
+   driversRepository.updateStatus(id, req.body.status);
 
-  if (!isUpdated) {
-    res
-      .status(HttpStatus.NotFound)
-      .send(
-        createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-      );
 
-    return;
-  }
 
   res.sendStatus(HttpStatus.NoContent);
 }
