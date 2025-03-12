@@ -27,7 +27,7 @@ ridesRoute.post(
   inputValidationResultMiddleware,
   createRideHandler,
 );
-//todo fix in swagger and README
+
 ridesRoute.post(
   '/:id/actions/finish',
   idValidation,

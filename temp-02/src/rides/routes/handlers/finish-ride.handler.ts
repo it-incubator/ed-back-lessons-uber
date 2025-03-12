@@ -25,17 +25,16 @@ export function finishRideHandler(
   if (ride.status === RideStatus.Finished) {
     res
       .status(HttpStatus.BadRequest)
-      .send(createErrorMessages([{ field: 'id', message: 'Ride not found' }])); //todo fix error text
+      .send(
+        createErrorMessages([{ field: 'id', message: 'Ride is already over' }]),
+      );
 
     return;
   }
 
   ridesRepository.updateStatus(id, RideStatus.Finished);
 
-  driversRepository.updateStatus(
-    ride.driverId,
-    DriverStatus.Online,
-  );
+  driversRepository.updateStatus(ride.driverId, DriverStatus.Online);
 
   res.sendStatus(HttpStatus.NoContent);
 }
