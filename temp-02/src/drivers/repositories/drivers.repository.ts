@@ -3,21 +3,21 @@ import { db } from '../../db/in-memory.db';
 import { DriverInputDto } from '../dto/driver.input-dto';
 
 export const driversRepository = {
-  async findAll(): Promise<Driver[]> {
+  findAll(): Driver[] {
     return db.drivers;
   },
 
-  async findById(id: number): Promise<Driver | null> {
+  findById(id: number): Driver | null {
     return db.drivers.find((d) => d.id === id) ?? null;
   },
 
-  async create(dto: DriverInputDto): Promise<Driver> {
+  create(dto: DriverInputDto): Driver {
     const newDriver: Driver = {
       id: db.drivers.length ? db.drivers[db.drivers.length - 1].id + 1 : 1,
       name: dto.name,
       phoneNumber: dto.phoneNumber,
       email: dto.email,
-      status: DriverStatus.AwaitingOrder,
+      status: DriverStatus.Online,
       vehicleMake: dto.vehicleMake,
       vehicleModel: dto.vehicleModel,
       vehicleYear: dto.vehicleYear,
@@ -32,7 +32,7 @@ export const driversRepository = {
     return newDriver;
   },
 
-  async update(id: number, dto: DriverInputDto): Promise<boolean> {
+  update(id: number, dto: DriverInputDto): boolean {
     const driver = db.drivers.find((d) => d.id === id);
 
     if (!driver) {
@@ -42,7 +42,6 @@ export const driversRepository = {
     driver.name = dto.name;
     driver.phoneNumber = dto.phoneNumber;
     driver.email = dto.email;
-    driver.status = DriverStatus.AwaitingOrder;
     driver.vehicleMake = dto.vehicleMake;
     driver.vehicleModel = dto.vehicleModel;
     driver.vehicleYear = dto.vehicleYear;
@@ -53,25 +52,25 @@ export const driversRepository = {
     return true;
   },
 
-  async updateStatus(id: number, newStatus: DriverStatus): Promise<boolean> {
+  updateStatus(id: number, newStatus: DriverStatus): void {
     const driver = db.drivers.find((d) => d.id === id);
 
     if (!driver) {
-      return false;
+      throw new Error('Driver not exist');
     }
 
     driver.status = newStatus;
-    return true;
+    return
   },
 
-  async delete(id: number): Promise<boolean> {
+  delete(id: number): void {
     const index = db.drivers.findIndex((v) => v.id === id);
 
     if (index === -1) {
-      return false;
+     throw new Error('Driver not exist');
     }
 
     db.drivers.splice(index, 1);
-    return true;
+    return;
   },
 };

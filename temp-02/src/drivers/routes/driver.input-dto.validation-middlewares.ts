@@ -1,5 +1,7 @@
 import { body } from 'express-validator';
-import { DriverStatus, VehicleFeature } from '../types/driver';
+import { VehicleFeature } from '../types/driver';
+
+import { availableStatusesForChange } from './handlers/change-driver-activity.handler';
 
 const nameValidation = body('name')
   .isString()
@@ -77,12 +79,12 @@ const vehicleFeaturesValidation = body('vehicleFeatures')
     return true;
   });
 
-export const driverStatusInputDtoValidation = body('status')
+export const changeDriverActivityValidation = body('status')
   .isString()
   .withMessage('status should be string')
   .trim()
   .isLength({ min: 1 })
-  .isIn(Object.values(DriverStatus))
+  .isIn(availableStatusesForChange)
   .withMessage('Invalid status value');
 
 export const driverInputDtoValidation = [

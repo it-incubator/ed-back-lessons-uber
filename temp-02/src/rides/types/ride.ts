@@ -4,8 +4,7 @@ export enum Currency {
 }
 
 export enum RideStatus {
-  InProgress = 'in progress',
-  Canceled = 'canceled',
+  InProgress = 'in-progress',
   Finished = 'finished',
 }
 
@@ -21,7 +20,7 @@ export type Ride = {
   status: RideStatus;
   createdAt: Date;
   updatedAt: Date | null;
-  address: {
+  addresses: {
     start: string;
     end: string;
   };

@@ -1,7 +1,7 @@
 export enum DriverStatus {
   OnOrder = 'on-order',
-  AwaitingOrder = 'awaiting-order',
-  OnPause = 'on-pause',
+  Online = 'online',
+  Offline = 'offline',
 }
 
 export enum VehicleFeature {

@@ -4,15 +4,15 @@ import { RideInputDto } from '../dto/ride-input.dto';
 import { Driver } from '../../drivers/types/driver';
 
 export const ridesRepository = {
-  async findAll(): Promise<Ride[]> {
+  findAll(): Ride[] {
     return db.rides;
   },
 
-  async findById(id: number): Promise<Ride | null> {
+  findById(id: number): Ride | null {
     return db.rides.find((d) => d.id === id) ?? null;
   },
 
-  async updateStatus(id: number, newStatus: RideStatus): Promise<boolean> {
+  updateStatus(id: number, newStatus: RideStatus): boolean {
     const ride = db.rides.find((d) => d.id === id);
 
     if (!ride) {
@@ -20,11 +20,12 @@ export const ridesRepository = {
     }
 
     ride.status = newStatus;
+    ride.updatedAt = new Date();
 
     return true;
   },
 
-  async create(driver: Driver, dto: RideInputDto): Promise<Ride> {
+  createInProgressRide(driver: Driver, dto: RideInputDto): Ride {
     const newRide: Ride = {
       id: db.rides.length ? db.rides[db.rides.length - 1].id + 1 : 1,
       clientName: dto.clientName,
@@ -37,7 +38,7 @@ export const ridesRepository = {
       status: RideStatus.InProgress,
       createdAt: new Date(),
       updatedAt: null,
-      address: {
+      addresses: {
         start: dto.startAddress,
         end: dto.endAddress,
       },

@@ -1,19 +1,17 @@
-import { Request, Response, Router } from 'express';
-import { HttpStatus } from '../../core/types/http-statuses';
-
-import { DriverStatus } from '../types/driver';
-import { DriverInputDto } from '../dto/driver.input-dto';
+import { Router } from 'express';
+import { inputValidationResultMiddleware } from '../../core/middlewares/validation/input-validtion-result.middleware';
 import {
-  createErrorMessages,
-  inputValidationResultMiddleware,
-} from '../../core/middlewares/validation/input-validtion-result.middleware';
-import { driversRepository } from '../repositories/drivers.repository';
-import {
+  changeDriverActivityValidation,
   driverInputDtoValidation,
-  driverStatusInputDtoValidation,
 } from './driver.input-dto.validation-middlewares';
 import { superAdminGuardMiddleware } from '../../accounts/middlewares/super-admin.guard-middleware';
 import { idValidation } from '../../core/middlewares/validation/params-id.validation-middleware';
+import { getDriverListHandler } from './handlers/get-driver-list.handler';
+import { getDriverHandler } from './handlers/get-driver.handler';
+import { createDriverHandler } from './handlers/create-driver.handler';
+import { updateDriverHandler } from './handlers/update-driver.handler';
+import { changeDriverActivityHandler } from './handlers/change-driver-activity.handler';
+import { deleteDriverHandler } from './handlers/delete-driver.handler';
 
 export const driversRouter = Router({});
 
@@ -21,43 +19,15 @@ export const driversRouter = Router({});
 driversRouter.use(superAdminGuardMiddleware);
 
 driversRouter
-  .get('', async (req: Request, res: Response) => {
-    const drivers = await driversRepository.findAll();
-    res.send(drivers);
-  })
+  .get('', getDriverListHandler)
 
-  .get(
-    '/:id',
-    idValidation,
-    inputValidationResultMiddleware,
-    async (req: Request, res: Response) => {
-      const id = parseInt(req.params.id);
-
-      const driver = await driversRepository.findById(id);
-
-      if (!driver) {
-        res
-          .status(HttpStatus.NotFound)
-          .send(
-            createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-          );
-
-        return;
-      }
-
-      res.send(driver);
-    },
-  )
+  .get('/:id', idValidation, inputValidationResultMiddleware, getDriverHandler)
 
   .post(
     '',
     driverInputDtoValidation,
     inputValidationResultMiddleware,
-    async (req: Request<{}, {}, DriverInputDto>, res: Response) => {
-      const newDriver = await driversRepository.create(req.body);
-
-      res.status(HttpStatus.Created).send(newDriver);
-    },
+    createDriverHandler,
   )
 
   .put(
@@ -65,75 +35,20 @@ driversRouter
     idValidation,
     driverInputDtoValidation,
     inputValidationResultMiddleware,
-    async (req: Request<{ id: string }, {}, DriverInputDto>, res: Response) => {
-      const id = parseInt(req.params.id);
-
-      const isUpdated = await driversRepository.update(id, req.body);
-
-      if (!isUpdated) {
-        res
-          .status(HttpStatus.NotFound)
-          .send(
-            createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-          );
-        return;
-      }
-
-      res.sendStatus(HttpStatus.NoContent);
-    },
+    updateDriverHandler,
   )
 
   .put(
-    '/:id/status',
+    '/:id/activity',
     idValidation,
-    driverStatusInputDtoValidation,
+    changeDriverActivityValidation,
     inputValidationResultMiddleware,
-    async (
-      req: Request<{ id: string }, {}, { status: DriverStatus }>,
-      res: Response,
-    ) => {
-      const id = parseInt(req.params.id);
-
-      //нельзя обновить статус у водителя на "on-order" без маршрута. tests
-      const isUpdated = await driversRepository.updateStatus(
-        id,
-        req.body.status,
-      );
-
-      if (!isUpdated) {
-        res
-          .status(HttpStatus.NotFound)
-          .send(
-            createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-          );
-
-        return;
-      }
-
-      res.sendStatus(HttpStatus.NoContent);
-    },
+    changeDriverActivityHandler,
   )
 
   .delete(
     '/:id',
     idValidation,
     inputValidationResultMiddleware,
-
-    async (req: Request, res: Response) => {
-      const id = parseInt(req.params.id);
-
-      const isDeleted = await driversRepository.delete(id);
-
-      if (!isDeleted) {
-        res
-          .status(HttpStatus.NotFound)
-          .send(
-            createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-          );
-
-        return;
-      }
-
-      res.sendStatus(HttpStatus.NoContent);
-    },
+    deleteDriverHandler,
   );

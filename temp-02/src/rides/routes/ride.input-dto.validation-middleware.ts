@@ -1,7 +1,6 @@
 import { body } from 'express-validator';
 import { Currency, RideStatus } from '../types/ride';
 
-//TODO: по аналогии с driver.input-dto.validation-middleware
 export const rideStatusValidation = body('status')
   .isString()
   .withMessage('status should be string')
@@ -16,12 +15,8 @@ export const clientNameValidation = body('clientName')
   .isLength({ min: 3, max: 100 });
 
 export const driverIdValidation = body('driverId')
-  .isString()
-  .withMessage('ID must be a string')
-  .isLength({ min: 1 })
-  .withMessage('ID must not be empty')
-  .isNumeric()
-  .withMessage('ID must be a numeric string');
+  .isInt({ gt: 0 })
+  .withMessage('ID must be a number');
 
 export const priceValidation = body('price')
   .isFloat({ gt: 0 }) // Проверка, что цена - это число больше 0
@@ -45,3 +40,12 @@ export const endAddressValidation = body('endAddress')
   .withMessage('endAddress should be string')
   .trim()
   .isLength({ min: 10, max: 200 });
+
+export const rideInputDtoValidation = [
+  clientNameValidation,
+  driverIdValidation,
+  priceValidation,
+  currencyValidation,
+  startAddressValidation,
+  endAddressValidation,
+];

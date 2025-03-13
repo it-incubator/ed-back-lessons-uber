@@ -5,7 +5,7 @@ info:
 
 tags:
   - name: Testing
-    description: For API testing
+    description: API for clearing the database
   - name: Drivers
     description: API for managing drivers
 
@@ -62,8 +62,10 @@ paths:
         - in: path
           name: id
           required: true
+          description: "The unique identifier of the driver"
           schema:
             type: integer
+            example: 2
       responses:
         200:
           description: The requested driver
@@ -80,8 +82,10 @@ paths:
         - in: path
           name: id
           required: true
+          description: "The unique identifier of the driver"
           schema:
             type: integer
+            example: 2
       requestBody:
         required: true
         content:
@@ -106,8 +110,10 @@ paths:
         - in: path
           name: id
           required: true
+          description: "The unique identifier of the driver"
           schema:
             type: integer
+            example: 2
       responses:
         204:
           description: Driver deleted successfully
@@ -124,13 +130,14 @@ paths:
           required: true
           schema:
             type: integer
+            example: 2
           description: The ID of the driver to update status
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VehicleStatusUpdateDto'
+              $ref: '#/components/schemas/DriverStatusInputDto'
       responses:
         204:
           description: Driver status updated successfully
@@ -162,35 +169,58 @@ components:
       properties:
         id:
           type: integer
+          description: "The unique identifier for the driver"
+          example: 2
         name:
           type: string
+          description: "The full name of the driver"
+          example: "Tom Rider"
         phoneNumber:
           type: string
+          description: "The driver's phone number"
+          example: "123-456-7890"
         email:
           type: string
+          description: "The driver's email address"
+          example: "tom.rider@example.com"
         status:
           type: string
-          enum: [ on-order, awaiting-order, on-pause ]
+          enum: [ on-order, online, offline ]
+          description: "The current status of the driver"
+          example: "online"
         vehicleMake:
           type: string
+          description: "The make of the vehicle"
+          example: "Toyota"
         vehicleModel:
           type: string
+          description: "The model of the vehicle"
+          example: "Camry"
         vehicleYear:
           type: integer
-          example: 2025
+          description: "The year the vehicle was manufactured"
+          example: 2020
         vehicleLicensePlate:
           type: string
+          description: "The vehicle's license plate number"
+          example: "XYZ 1234"
         vehicleDescription:
           type: string
           nullable: true
+          description: "A description of the vehicle, including any notable features or conditions"
+          example: "A spacious SUV with leather seats and a sunroof."
         vehicleFeatures:
           type: array
           items:
             type: string
-            enum: [ WiFi, ChildSeat, PetFriendly ]
+            enum: [ wi-fi, child-seat, pet-friendly ]
+          description: "Features available in the vehicle. Choose from the provided options"
+          example: [ "wi-fi", "pet-friendly" ]
         createdAt:
           type: string
           format: date-time
+          description: "The date and time when the driver was created"
+          example: "2023-03-05T12:00:00Z"
     DriverInputDto:
       type: object
       required:
@@ -205,35 +235,54 @@ components:
       properties:
         name:
           type: string
+          description: "The full name of the driver"
+          example: "Tom Rider"
         phoneNumber:
           type: string
+          description: "The driver's phone number"
+          example: "123-456-7890"
         email:
           type: string
+          description: "The driver's email address"
+          example: "tom.rider@example.com"
         vehicleMake:
           type: string
+          description: "The make of the vehicle"
+          example: "Toyota"
         vehicleModel:
           type: string
+          description: "The model of the vehicle"
+          example: "Camry"
         vehicleYear:
           type: integer
+          description: "The year the vehicle was manufactured"
           example: 2025
         vehicleLicensePlate:
           type: string
+          description: "The vehicle's license plate number"
+          example: "XYZ 1234"
         vehicleDescription:
           type: string
           nullable: true
+          description: "A description of the vehicle, including any notable features or conditions"
+          example: "A spacious SUV with leather seats and a sunroof"
         vehicleFeatures:
           type: array
           items:
             type: string
-            enum: [ WiFi, ChildSeat, PetFriendly ]
-    VehicleStatusUpdateDto:
+            enum: [ wi-fi, child-seat, pet-friendly ]
+          description: "Features available in the vehicle. Choose from the provided options"
+          example: [ "wi-fi", "pet-friendly" ]
+    DriverStatusInputDto:
       type: object
       required:
         - status
       properties:
         status:
           type: string
-          enum: [ awaiting-order, on-order, on-pause ]
+          enum: [ on-order, online, offline ]
+          description: "The current status of the driver"
+          example: "online"
     ValidationError:
       type: object
       properties:
