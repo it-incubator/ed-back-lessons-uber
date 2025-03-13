@@ -1,0 +1,234 @@
+openapi: 3.0.0
+info:
+  title: API Documentation
+  version: 1.0.0
+
+securitySchemes:
+  BasicAuth:
+    type: http
+    scheme: basic
+
+tags:
+  - name: Rides
+    description: API for managing rides
+
+paths:
+  /api/rides:
+    get:
+      summary: Get a list of all rides
+      tags: [ Rides ]
+      security:
+        - BasicAuth: [ ]
+      responses:
+        200:
+          description: List of all rides
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ride'
+    post:
+      summary: Create a new ride
+      tags: [ Rides ]
+      security:
+        - BasicAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RideInputDto'
+      responses:
+        201:
+          description: Ride successfully created for an existing driver with status online
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ride'
+        400:
+          description: Validation error or the driver does not exist or the driver's status is not online
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+  /api/rides/{id}:
+    get:
+      summary: Get a ride by ID
+      tags: [ Rides ]
+      security:
+        - BasicAuth: [ ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The unique identifier of the ride
+          schema:
+            type: integer
+            example: 5
+      responses:
+        200:
+          description: The requested ride
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ride'
+        404:
+          description: Ride not found
+
+  /api/rides/{id}/actions/finish:
+    post:
+      summary: Finish ride by ID
+      tags: [ Rides ]
+      security:
+        - BasicAuth: [ ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The unique identifier of the ride
+          schema:
+            type: integer
+            example: 5
+      responses:
+        204:
+          description: Ride finished successfully
+        400:
+          description: The ride has already been finished
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        404:
+          description: Ride not found
+
+components:
+  schemas:
+    Ride:
+      type: object
+      required:
+        - id
+        - clientName
+        - driverId
+        - driverName
+        - vehicleLicensePlate
+        - vehicleName
+        - price
+        - currency
+        - status
+        - createdAt
+      properties:
+        id:
+          type: integer
+          description: "Unique identifier for the ride"
+          example: 5
+        clientName:
+          type: string
+          description: "Name of the client who requested the ride"
+          example: "Alice Johnson"
+        driverId:
+          type: integer
+          description: "The unique identifier for the driver"
+          example: 2
+        driverName:
+          type: string
+          description: "The full name of the driver"
+          example: "Tom Rider"
+        vehicleLicensePlate:
+          type: string
+          example: "XYZ 1234"
+          description: "License plate of the vehicle"
+        vehicleName:
+          type: string
+          example: "Toyota Camry"
+          description: "Model of the vehicle"
+        price:
+          type: number
+          format: float
+          example: 15.75
+          description: "Cost of the trip"
+        currency:
+          type: string
+          enum: [ usd, eur ]
+          example: "usd"
+          description: "Currency in which the cost is specified"
+        status:
+          type: string
+          enum: [ "in progress", "finished" ]
+          example: "in progress"
+          description: "Status of the ride (in progress or finished)"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-03-01T14:30:00Z"
+          description: "Date and time when the ride was created"
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+          description: "Date and time of the last update to the ride (if applicable)"
+        addresses:
+          type: object
+          properties:
+            start:
+              type: string
+              example: "123 Main St, Cityville"
+              description: "Starting address of the ride"
+            end:
+              type: string
+              example: "456 Elm St, Townsville"
+              description: "Ending address of the ride"
+    RideInputDto:
+      type: object
+      required:
+        - clientName
+        - price
+        - currency
+        - driverId
+        - startAddress
+        - endAddress
+      properties:
+        clientName:
+          type: string
+          description: "Name of the client who requested the ride"
+          example: "Alice Johnson"
+        price:
+          type: number
+          format: float
+          example: 15.75
+          description: "Cost of the trip"
+        currency:
+          type: string
+          enum: [ usd, eur ]
+          example: "usd"
+          description: "Currency in which the cost is specified"
+        driverId:
+          type: integer
+          description: "The unique identifier for the driver"
+          example: 2
+        startAddress:
+          type: string
+          example: "123 Main St, Cityville"
+          description: "Starting address of the ride"
+        endAddress:
+          type: string
+          example: "456 Elm St, Townsville"
+          description: "Ending address of the ride"
+    ValidationError:
+      type: object
+      properties:
+        field:
+          type: string
+          example: "clientName"
+        message:
+          type: string
+          example: "Client name is required"
+    ValidationErrorResponse:
+      type: object
+      properties:
+        errorMessages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
