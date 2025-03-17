@@ -5,13 +5,15 @@ import { createErrorMessages } from '../../../core/middlewares/validation/input-
 import { ridesRepository } from '../../repositories/rides.repository';
 import { driversRepository } from '../../../drivers/repositories/drivers.repository';
 import { DriverStatus } from '../../../drivers/types/driver';
+import { client } from '../../../db/mongo.db';
+import { ClientSession } from 'mongodb';
 
-export function finishRideHandler(
+export async function finishRideHandler(
   req: Request<{ id: string }, {}, {}>,
   res: Response,
 ) {
-  const id = parseInt(req.params.id);
-  const ride = ridesRepository.findById(id);
+  const id = req.params.id;
+  const ride = await ridesRepository.findById(id);
 
   if (!ride) {
     res
@@ -31,10 +33,28 @@ export function finishRideHandler(
 
     return;
   }
+  // Начало транзакции
+  const session: ClientSession = client.startSession();
+  session.startTransaction();
 
-  ridesRepository.updateStatus(id, RideStatus.Finished);
+  try {
+    await ridesRepository.updateStatus(id, RideStatus.Finished, session);
 
-  driversRepository.updateStatus(ride.driverId, DriverStatus.Online);
+    await driversRepository.updateStatus(
+      ride.driverId,
+      DriverStatus.Online,
+      session,
+    );
 
-  res.sendStatus(HttpStatus.NoContent);
+    // Подтверждение транзакции
+    await session.commitTransaction();
+
+    res.sendStatus(HttpStatus.NoContent);
+  } catch (e: unknown) {
+    // Откат транзакции в случае ошибки
+    await session.abortTransaction();
+    throw new Error(`Transaction aborted due to error: ${e}`);
+  } finally {
+    await session.endSession();
+  }
 }

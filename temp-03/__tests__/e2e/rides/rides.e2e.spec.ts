@@ -1,4 +1,6 @@
+// @ts-ignore
 import request from 'supertest';
+// @ts-ignore
 import express from 'express';
 import { setupApp } from '../../../src/setup-app';
 import { generateBasicAuthToken } from '../../utils/generate-admin-auth-token';
@@ -11,6 +13,8 @@ import { createRide } from '../../utils/rides/create-ride';
 import { RIDES_PATH } from '../../../src/core/paths/paths';
 import { getRideById } from '../../utils/rides/get-ride-by-id';
 import { getDriverById } from '../../utils/drivers/get-driver-by-id';
+import { runDB, stopDb } from '../../../src/db/mongo.db';
+import { SETTINGS } from '../../../src/core/settings/settings';
 
 describe('Rides API', () => {
   const app = express();
@@ -19,7 +23,12 @@ describe('Rides API', () => {
   const adminToken = generateBasicAuthToken();
 
   beforeAll(async () => {
+    await runDB(SETTINGS.MONGO_URL_TEST);
     await clearDb(app);
+  });
+
+  afterAll(async () => {
+    await stopDb();
   });
 
   it('✅ should create ride; POST /api/rides', async () => {
@@ -58,8 +67,9 @@ describe('Rides API', () => {
 
     expect(getRide).toEqual({
       ...createdRide,
-      id: expect.any(Number),
-      createdAt: expect.any(String),
+      id: expect.any(String),
+      startedAt: expect.any(String),
+      finishedAt: null,
     });
   });
 
@@ -80,7 +90,8 @@ describe('Rides API', () => {
     expect(getRide).toEqual({
       ...createdRide,
       status: RideStatus.Finished,
-      updatedAt: expect.any(String),
+      startedAt: expect.any(String),
+      finishedAt: expect.any(String),
     });
 
     const getDriver = await getDriverById(app, driver.id);

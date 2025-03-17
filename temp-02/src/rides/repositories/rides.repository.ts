@@ -1,7 +1,5 @@
 import { Ride, RideStatus } from '../types/ride';
 import { db } from '../../db/in-memory.db';
-import { RideInputDto } from '../dto/ride-input.dto';
-import { Driver } from '../../drivers/types/driver';
 
 export const ridesRepository = {
   findAll(): Ride[] {
@@ -12,38 +10,20 @@ export const ridesRepository = {
     return db.rides.find((d) => d.id === id) ?? null;
   },
 
-  updateStatus(id: number, newStatus: RideStatus): boolean {
+  updateStatus(id: number, newStatus: RideStatus): void {
     const ride = db.rides.find((d) => d.id === id);
 
     if (!ride) {
-      return false;
+      throw new Error('Ride does not exist');
     }
 
     ride.status = newStatus;
     ride.updatedAt = new Date();
 
-    return true;
+    return;
   },
 
-  createInProgressRide(driver: Driver, dto: RideInputDto): Ride {
-    const newRide: Ride = {
-      id: db.rides.length ? db.rides[db.rides.length - 1].id + 1 : 1,
-      clientName: dto.clientName,
-      driverId: dto.driverId,
-      driverName: driver.name,
-      vehicleLicensePlate: driver.vehicleLicensePlate,
-      vehicleName: `${driver.vehicleMake} ${driver.vehicleModel}`,
-      price: dto.price,
-      currency: dto.currency,
-      status: RideStatus.InProgress,
-      createdAt: new Date(),
-      updatedAt: null,
-      addresses: {
-        start: dto.startAddress,
-        end: dto.endAddress,
-      },
-    };
-
+  createRide(newRide: Ride): Ride {
     db.rides.push(newRide);
 
     return newRide;

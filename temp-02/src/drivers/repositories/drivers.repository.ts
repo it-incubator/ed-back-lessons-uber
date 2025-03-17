@@ -11,32 +11,17 @@ export const driversRepository = {
     return db.drivers.find((d) => d.id === id) ?? null;
   },
 
-  create(dto: DriverInputDto): Driver {
-    const newDriver: Driver = {
-      id: db.drivers.length ? db.drivers[db.drivers.length - 1].id + 1 : 1,
-      name: dto.name,
-      phoneNumber: dto.phoneNumber,
-      email: dto.email,
-      status: DriverStatus.Online,
-      vehicleMake: dto.vehicleMake,
-      vehicleModel: dto.vehicleModel,
-      vehicleYear: dto.vehicleYear,
-      vehicleLicensePlate: dto.vehicleLicensePlate,
-      vehicleDescription: dto.vehicleDescription,
-      vehicleFeatures: dto.vehicleFeatures,
-      createdAt: new Date(),
-    };
-
+  create(newDriver: Driver): Driver {
     db.drivers.push(newDriver);
 
     return newDriver;
   },
 
-  update(id: number, dto: DriverInputDto): boolean {
+  update(id: number, dto: DriverInputDto): void {
     const driver = db.drivers.find((d) => d.id === id);
 
     if (!driver) {
-      return false;
+      throw new Error('Driver not exist');
     }
 
     driver.name = dto.name;
@@ -49,7 +34,7 @@ export const driversRepository = {
     driver.vehicleDescription = dto.vehicleDescription;
     driver.vehicleFeatures = dto.vehicleFeatures;
 
-    return true;
+    return;
   },
 
   updateStatus(id: number, newStatus: DriverStatus): void {
@@ -60,14 +45,14 @@ export const driversRepository = {
     }
 
     driver.status = newStatus;
-    return
+    return;
   },
 
   delete(id: number): void {
     const index = db.drivers.findIndex((v) => v.id === id);
 
     if (index === -1) {
-     throw new Error('Driver not exist');
+      throw new Error('Driver not exist');
     }
 
     db.drivers.splice(index, 1);

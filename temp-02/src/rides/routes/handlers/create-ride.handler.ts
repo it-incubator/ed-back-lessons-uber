@@ -5,6 +5,8 @@ import { DriverStatus } from '../../../drivers/types/driver';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { createErrorMessages } from '../../../core/middlewares/validation/input-validtion-result.middleware';
 import { ridesRepository } from '../../repositories/rides.repository';
+import { Ride, RideStatus } from '../../types/ride';
+import { db } from '../../../db/in-memory.db';
 
 export function createRideHandler(
   req: Request<{}, {}, RideInputDto>,
@@ -23,8 +25,25 @@ export function createRideHandler(
 
     return;
   }
+  const newRide: Ride = {
+    id: db.rides.length ? db.rides[db.rides.length - 1].id + 1 : 1,
+    clientName: req.body.clientName,
+    driverId: req.body.driverId,
+    driverName: driver.name,
+    vehicleLicensePlate: driver.vehicleLicensePlate,
+    vehicleName: `${driver.vehicleMake} ${driver.vehicleModel}`,
+    price: req.body.price,
+    currency: req.body.currency,
+    status: RideStatus.InProgress,
+    createdAt: new Date(),
+    updatedAt: null,
+    addresses: {
+      from: req.body.fromAddress,
+      to: req.body.toAddress,
+    },
+  };
 
-  const newRide = ridesRepository.createInProgressRide(driver, req.body);
+  ridesRepository.createRide(newRide);
 
   driversRepository.updateStatus(driver.id, DriverStatus.OnOrder);
 

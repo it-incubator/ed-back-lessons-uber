@@ -9,7 +9,7 @@ import { generateBasicAuthToken } from '../generate-admin-auth-token';
 
 export async function updateDriver<R = null>(
   app: Express,
-  driverId: number,
+  driverId: string,
   driverDto?: Partial<DriverInputDto>,
   expectedStatus?: HttpStatus,
 ): Promise<R> {

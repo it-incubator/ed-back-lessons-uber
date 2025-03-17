@@ -1,14 +1,7 @@
-export enum Currency {
-  USD = 'usd',
-  EUR = 'eur',
-}
+import { Currency, RideStatus } from './ride';
 
-export enum RideStatus {
-  InProgress = 'in-progress',
-  Finished = 'finished',
-}
-
-export type Ride = {
+export type RideViewModel = {
+  id: string;
   clientName: string;
   driverId: string;
   driverName: string;
@@ -17,8 +10,6 @@ export type Ride = {
   price: number;
   currency: Currency;
   status: RideStatus;
-  createdAt: Date;
-  updatedAt: Date | null;
   startedAt: Date | null;
   finishedAt: Date | null;
   addresses: {

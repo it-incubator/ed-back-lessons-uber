@@ -5,14 +5,18 @@ import { DriverStatus } from '../../../drivers/types/driver';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { createErrorMessages } from '../../../core/middlewares/validation/input-validtion-result.middleware';
 import { ridesRepository } from '../../repositories/rides.repository';
+import { ClientSession } from 'mongodb';
+import { client } from '../../../db/mongo.db';
+import { Ride, RideStatus } from '../../types/ride';
+import { createRideViewModelUtil } from '../util/create-ride-view-model.util';
 
-export function createRideHandler(
+export async function createRideHandler(
   req: Request<{}, {}, RideInputDto>,
   res: Response,
 ) {
   const driverId = req.body.driverId;
 
-  const driver = driversRepository.findById(driverId);
+  const driver = await driversRepository.findById(driverId);
 
   if (!driver || driver.status !== DriverStatus.Online) {
     res
@@ -24,9 +28,49 @@ export function createRideHandler(
     return;
   }
 
-  const newRide = ridesRepository.createInProgressRide(driver, req.body);
+  // Начало транзакции
+  const session: ClientSession = client.startSession();
+  session.startTransaction();
 
-  driversRepository.updateStatus(driver.id, DriverStatus.OnOrder);
+  try {
+    const newRide: Ride = {
+      clientName: req.body.clientName,
+      driverId: req.body.driverId,
+      driverName: driver.name,
+      vehicleLicensePlate: driver.vehicleLicensePlate,
+      vehicleName: `${driver.vehicleMake} ${driver.vehicleModel}`,
+      price: req.body.price,
+      currency: req.body.currency,
+      status: RideStatus.InProgress,
+      createdAt: new Date(),
+      updatedAt: null,
+      startedAt: new Date(),
+      finishedAt: null,
+      addresses: {
+        from: req.body.startAddress,
+        to: req.body.endAddress,
+      },
+    };
 
-  res.status(HttpStatus.Created).send(newRide);
+    const createdRide = await ridesRepository.createRide(newRide, session);
+
+    await driversRepository.updateStatus(
+      driver._id.toString(),
+      DriverStatus.OnOrder,
+      session,
+    );
+    // Подтверждение транзакции
+    await session.commitTransaction();
+
+    const rideViewModel = createRideViewModelUtil(createdRide);
+
+    res.status(HttpStatus.Created).send(rideViewModel);
+  } catch (e: unknown) {
+    // Откат транзакции в случае ошибки
+
+    await session.abortTransaction();
+    throw new Error(`Transaction aborted due to error: ${e}`);
+  } finally {
+    await session.endSession();
+  }
 }

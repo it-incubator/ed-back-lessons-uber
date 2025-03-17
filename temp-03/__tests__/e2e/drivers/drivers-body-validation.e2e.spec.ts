@@ -1,4 +1,6 @@
+// @ts-ignore
 import request from 'supertest';
+// @ts-ignore
 import express from 'express';
 import {
   DriverStatus,
@@ -15,6 +17,8 @@ import { ValidationErrorDto } from '../../../src/core/types/validationError.dto'
 import { DRIVERS_PATH } from '../../../src/core/paths/paths';
 import { updateDriver } from '../../utils/drivers/update-driver';
 import { getDriverById } from '../../utils/drivers/get-driver-by-id';
+import { runDB, stopDb } from '../../../src/db/mongo.db';
+import { SETTINGS } from '../../../src/core/settings/settings';
 
 describe('Driver API body validation check', () => {
   const app = express();
@@ -25,7 +29,12 @@ describe('Driver API body validation check', () => {
   const adminToken = generateBasicAuthToken();
 
   beforeAll(async () => {
+    await runDB(SETTINGS.MONGO_URL_TEST);
     await clearDb(app);
+  });
+
+  afterAll(async () => {
+    await stopDb();
   });
 
   it(`❌ should not create driver when incorrect body passed; POST /api/drivers'`, async () => {

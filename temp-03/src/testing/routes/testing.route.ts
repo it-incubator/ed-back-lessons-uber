@@ -1,11 +1,14 @@
-import { Router, Request, Response } from 'express';
-import { db } from '../../db/in-memory.db';
+import { Request, Response, Router } from 'express';
 import { HttpStatus } from '../../core/types/http-statuses';
+import { driverCollection, rideCollection } from '../../db/mongo.db';
 
 export const testingRouter = Router({});
 
-testingRouter.delete('/all-data', (req: Request, res: Response) => {
+testingRouter.delete('/all-data', async (req: Request, res: Response) => {
   //truncate db
-  db.drivers = [];
+  await Promise.all([
+    rideCollection.deleteMany(),
+    driverCollection.deleteMany(),
+  ]);
   res.sendStatus(HttpStatus.NoContent);
 });

@@ -21,7 +21,7 @@ export type Ride = {
   createdAt: Date;
   updatedAt: Date | null;
   addresses: {
-    start: string;
-    end: string;
+    from: string;
+    to: string;
   };
 };

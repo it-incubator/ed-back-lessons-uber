@@ -75,8 +75,8 @@ paths:
           required: true
           description: "The unique identifier of the driver"
           schema:
-            type: integer
-            example: 2
+            type: string
+            example: 5f1a2b3c4d5e6f7g8h9i0j1k2
       responses:
         200:
           description: The requested driver
@@ -97,8 +97,8 @@ paths:
           required: true
           description: "The unique identifier of the driver"
           schema:
-            type: integer
-            example: 2
+            type: string
+            example: 5f1a2b3c4d5e6f7g8h9i0j1k2
       requestBody:
         required: true
         content:
@@ -127,8 +127,8 @@ paths:
           required: true
           description: "The unique identifier of the driver"
           schema:
-            type: integer
-            example: 2
+            type: string
+            example: 5f1a2b3c4d5e6f7g8h9i0j1k2
       responses:
         204:
           description: "Driver deleted successfully"
@@ -152,8 +152,8 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
-            example: 2
+            type: string
+            example: 5f1a2b3c4d5e6f7g8h9i0j1k2
           description: "The ID of the driver to update activity"
       requestBody:
         required: true
@@ -195,9 +195,9 @@ components:
         - createdAt
       properties:
         id:
-          type: integer
+          type: string
           description: "The unique identifier for the driver"
-          example: 2
+          example: 5f1a2b3c4d5e6f7g8h9i0j1k2
         name:
           type: string
           description: "The full name of the driver"

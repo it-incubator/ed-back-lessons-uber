@@ -2,11 +2,12 @@ import { Request, Response } from 'express';
 import { ridesRepository } from '../../repositories/rides.repository';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { createErrorMessages } from '../../../core/middlewares/validation/input-validtion-result.middleware';
+import { createRideViewModelUtil } from '../util/create-ride-view-model.util';
 
-export function getRideHandler(req: Request, res: Response) {
-  const id = parseInt(req.params.id);
+export async function getRideHandler(req: Request, res: Response) {
+  const id = req.params.id;
 
-  const ride = ridesRepository.findById(id);
+  const ride = await ridesRepository.findById(id);
 
   if (!ride) {
     res
@@ -16,5 +17,7 @@ export function getRideHandler(req: Request, res: Response) {
     return;
   }
 
-  res.send(ride);
+  const rideViewModel = createRideViewModelUtil(ride);
+
+  res.send(rideViewModel);
 }

@@ -4,11 +4,11 @@ import { Express } from 'express';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { DRIVERS_PATH } from '../../../src/core/paths/paths';
 import { generateBasicAuthToken } from '../generate-admin-auth-token';
-import { Driver } from '../../../src/drivers/types/driver';
+import { DriverViewModel } from '../../../src/drivers/types/driver-view-model';
 
-export async function getDriverById<R = Driver>(
+export async function getDriverById<R = DriverViewModel>(
   app: Express,
-  driverId: number,
+  driverId: string,
   expectedStatus?: HttpStatus,
 ): Promise<R> {
   const testStatus = expectedStatus ?? HttpStatus.Ok;

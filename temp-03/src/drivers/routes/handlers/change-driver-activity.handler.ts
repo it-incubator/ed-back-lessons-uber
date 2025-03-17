@@ -11,11 +11,11 @@ export const availableStatusesForChange = [
   DriverStatus.Online,
 ];
 
-export function changeDriverActivityHandler(
+export async function changeDriverActivityHandler(
   req: Request<{ id: string }, {}, { status: ChangeDriverStatusInputDto }>,
   res: Response,
 ) {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
 
   /*
    * Можно менять только доступные статусы для изменения 'online'и 'offline'
@@ -30,7 +30,7 @@ export function changeDriverActivityHandler(
     return;
   }
 
-  const driver = driversRepository.findById(id);
+  const driver = await driversRepository.findById(id);
 
   if (!driver) {
     res
@@ -55,9 +55,7 @@ export function changeDriverActivityHandler(
     return;
   }
 
-   driversRepository.updateStatus(id, req.body.status);
-
-
+  await driversRepository.updateStatus(id, req.body.status);
 
   res.sendStatus(HttpStatus.NoContent);
 }

@@ -4,11 +4,11 @@ import { DriverInputDto } from '../../../src/drivers/dto/driver.input-dto';
 import { Express } from 'express';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { generateBasicAuthToken } from '../generate-admin-auth-token';
-import { Driver } from '../../../src/drivers/types/driver';
 import { DRIVERS_PATH } from '../../../src/core/paths/paths';
 import { getDriverDto } from './get-driver-dto';
+import { DriverViewModel } from '../../../src/drivers/types/driver-view-model';
 
-export async function createDriver<R = Driver>(
+export async function createDriver<R = DriverViewModel>(
   app: Express,
   driverDto?: Partial<DriverInputDto>,
   expectedStatus?: HttpStatus,

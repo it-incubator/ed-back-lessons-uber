@@ -10,9 +10,9 @@ export function updateDriverHandler(
 ) {
   const id = parseInt(req.params.id);
 
-  const isUpdated = driversRepository.update(id, req.body);
+  const driver = driversRepository.findById(id);
 
-  if (!isUpdated) {
+  if (!driver) {
     res
       .status(HttpStatus.NotFound)
       .send(
@@ -20,6 +20,8 @@ export function updateDriverHandler(
       );
     return;
   }
+
+  driversRepository.update(id, req.body);
 
   res.sendStatus(HttpStatus.NoContent);
 }

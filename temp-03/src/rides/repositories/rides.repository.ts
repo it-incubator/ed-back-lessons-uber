@@ -1,51 +1,48 @@
 import { Ride, RideStatus } from '../types/ride';
-import { db } from '../../db/in-memory.db';
-import { RideInputDto } from '../dto/ride-input.dto';
-import { Driver } from '../../drivers/types/driver';
+import { rideCollection } from '../../db/mongo.db';
+import { ClientSession, ObjectId, WithId } from 'mongodb';
 
 export const ridesRepository = {
-  findAll(): Ride[] {
-    return db.rides;
+  async findAll(): Promise<WithId<Ride>[]> {
+    return rideCollection.find().toArray();
   },
 
-  findById(id: number): Ride | null {
-    return db.rides.find((d) => d.id === id) ?? null;
+  async findById(id: string): Promise<WithId<Ride> | null> {
+    return rideCollection.findOne({ _id: new ObjectId(id) });
   },
 
-  updateStatus(id: number, newStatus: RideStatus): boolean {
-    const ride = db.rides.find((d) => d.id === id);
+  async updateStatus(
+    id: string,
+    newStatus: RideStatus,
+    session: ClientSession,
+  ): Promise<void> {
+    const updateResult = await rideCollection.updateOne(
+      {
+        _id: new ObjectId(id),
+      },
+      {
+        $set: {
+          status: newStatus,
+          finishedAt: new Date(),
+          updatedAt: new Date(),
+        },
+      },
+      { session },
+    );
 
-    if (!ride) {
-      return false;
+    if (updateResult.matchedCount < 1) {
+      throw new Error('Ride not exist');
     }
 
-    ride.status = newStatus;
-    ride.updatedAt = new Date();
-
-    return true;
+    return;
   },
 
-  createInProgressRide(driver: Driver, dto: RideInputDto): Ride {
-    const newRide: Ride = {
-      id: db.rides.length ? db.rides[db.rides.length - 1].id + 1 : 1,
-      clientName: dto.clientName,
-      driverId: dto.driverId,
-      driverName: driver.name,
-      vehicleLicensePlate: driver.vehicleLicensePlate,
-      vehicleName: `${driver.vehicleMake} ${driver.vehicleModel}`,
-      price: dto.price,
-      currency: dto.currency,
-      status: RideStatus.InProgress,
-      createdAt: new Date(),
-      updatedAt: null,
-      addresses: {
-        start: dto.startAddress,
-        end: dto.endAddress,
-      },
-    };
+  async createRide(
+    newRide: Ride,
+    session: ClientSession,
+  ): Promise<WithId<Ride>> {
+    const insertResult = await rideCollection.insertOne(newRide, { session });
 
-    db.rides.push(newRide);
-
-    return newRide;
+    return { ...newRide, _id: insertResult.insertedId };
   },
 };

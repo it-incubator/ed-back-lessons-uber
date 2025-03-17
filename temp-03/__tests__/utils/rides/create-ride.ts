@@ -4,12 +4,12 @@ import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { Express } from 'express';
 import { RideInputDto } from '../../../src/rides/dto/ride-input.dto';
 import { createDriver } from '../drivers/create-driver';
-import { Ride } from '../../../src/rides/types/ride';
 import { generateBasicAuthToken } from '../generate-admin-auth-token';
 import { RIDES_PATH } from '../../../src/core/paths/paths';
 import { getRideDto } from './get-ride-dto';
+import { RideViewModel } from '../../../src/rides/types/ride-view-model';
 
-export async function createRide<R = Ride>(
+export async function createRide<R = RideViewModel>(
   app: Express,
   rideDto?: Partial<RideInputDto>,
   expectedStatus?: HttpStatus,

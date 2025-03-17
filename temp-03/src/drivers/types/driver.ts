@@ -11,7 +11,6 @@ export enum VehicleFeature {
 }
 
 export type Driver = {
-  id: number;
   name: string;
   phoneNumber: string;
   email: string;

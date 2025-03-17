@@ -1,14 +1,14 @@
 // @ts-ignore
 import request from 'supertest';
-import { Ride } from '../../../src/rides/types/ride';
 import { Express } from 'express';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { RIDES_PATH } from '../../../src/core/paths/paths';
 import { generateBasicAuthToken } from '../generate-admin-auth-token';
+import { RideViewModel } from '../../../src/rides/types/ride-view-model';
 
-export async function getRideById<R = Ride>(
+export async function getRideById<R = RideViewModel>(
   app: Express,
-  rideId: number,
+  rideId: string,
   expectedStatus?: HttpStatus,
 ): Promise<R> {
   const testStatus = expectedStatus ?? HttpStatus.Ok;

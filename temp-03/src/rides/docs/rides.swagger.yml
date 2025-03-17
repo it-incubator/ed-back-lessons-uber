@@ -65,8 +65,8 @@ paths:
           required: true
           description: The unique identifier of the ride
           schema:
-            type: integer
-            example: 5
+            type: string
+            example: 60c72b2f9b1e8a001c8e4f1a
       responses:
         200:
           description: The requested ride
@@ -89,8 +89,8 @@ paths:
           required: true
           description: The unique identifier of the ride
           schema:
-            type: integer
-            example: 5
+            type: string
+            example: 60c72b2f9b1e8a001c8e4f1a
       responses:
         204:
           description: Ride finished successfully
@@ -120,17 +120,17 @@ components:
         - createdAt
       properties:
         id:
-          type: integer
+          type: string
           description: "Unique identifier for the ride"
-          example: 5
+          example: 60c72b2f9b1e8a001c8e4f1a
         clientName:
           type: string
           description: "Name of the client who requested the ride"
           example: "Alice Johnson"
         driverId:
-          type: integer
+          type: string
           description: "The unique identifier for the driver"
-          example: 2
+          example: 5f1a2b3c4d5e6f7g8h9i0j1k2
         driverName:
           type: string
           description: "The full name of the driver"
@@ -172,11 +172,11 @@ components:
         addresses:
           type: object
           properties:
-            start:
+            from:
               type: string
               example: "123 Main St, Cityville"
               description: "Starting address of the ride"
-            end:
+            to:
               type: string
               example: "456 Elm St, Townsville"
               description: "Ending address of the ride"
@@ -187,8 +187,8 @@ components:
         - price
         - currency
         - driverId
-        - startAddress
-        - endAddress
+        - fromAddress
+        - toAddress
       properties:
         clientName:
           type: string
@@ -205,14 +205,14 @@ components:
           example: "usd"
           description: "Currency in which the cost is specified"
         driverId:
-          type: integer
+          type: string
           description: "The unique identifier for the driver"
-          example: 2
-        startAddress:
+          example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+        fromAddress:
           type: string
           example: "123 Main St, Cityville"
           description: "Starting address of the ride"
-        endAddress:
+        toAddress:
           type: string
           example: "456 Elm St, Townsville"
           description: "Ending address of the ride"

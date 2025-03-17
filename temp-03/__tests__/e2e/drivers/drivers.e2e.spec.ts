@@ -1,4 +1,6 @@
+// @ts-ignore
 import request from 'supertest';
+// @ts-ignore
 import express from 'express';
 
 import {
@@ -15,6 +17,8 @@ import { getDriverDto } from '../../utils/drivers/get-driver-dto';
 import { clearDb } from '../../utils/clear-db';
 import { getDriverById } from '../../utils/drivers/get-driver-by-id';
 import { updateDriver } from '../../utils/drivers/update-driver';
+import { runDB, stopDb } from '../../../src/db/mongo.db';
+import { SETTINGS } from '../../../src/core/settings/settings';
 
 describe('Driver API', () => {
   const app = express();
@@ -23,7 +27,12 @@ describe('Driver API', () => {
   const adminToken = generateBasicAuthToken();
 
   beforeAll(async () => {
+    await runDB(SETTINGS.MONGO_URL_TEST);
     await clearDb(app);
+  });
+
+  afterAll(async () => {
+    await stopDb();
   });
 
   it('✅ should create driver; POST /api/drivers', async () => {
@@ -58,7 +67,7 @@ describe('Driver API', () => {
 
     expect(driver).toEqual({
       ...createdDriver,
-      id: expect.any(Number),
+      id: expect.any(String),
       createdAt: expect.any(String),
     });
   });

@@ -4,10 +4,10 @@ import { driversRepository } from '../../repositories/drivers.repository';
 import { DriverStatus } from '../../types/driver';
 import { createErrorMessages } from '../../../core/middlewares/validation/input-validtion-result.middleware';
 
-export function deleteDriverHandler(req: Request, res: Response) {
-  const id = parseInt(req.params.id);
+export async function deleteDriverHandler(req: Request, res: Response) {
+  const id = req.params.id;
 
-  const driver = driversRepository.findById(id);
+  const driver = await driversRepository.findById(id);
 
   if (!driver) {
     res
@@ -32,7 +32,7 @@ export function deleteDriverHandler(req: Request, res: Response) {
     return;
   }
 
-  driversRepository.delete(id);
+  await driversRepository.delete(id);
 
   res.sendStatus(HttpStatus.NoContent);
 }

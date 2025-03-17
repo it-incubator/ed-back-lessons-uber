@@ -1,76 +1,83 @@
 import { Driver, DriverStatus } from '../types/driver';
-import { db } from '../../db/in-memory.db';
 import { DriverInputDto } from '../dto/driver.input-dto';
+import { driverCollection } from '../../db/mongo.db';
+import { ClientSession, ObjectId, WithId } from 'mongodb';
 
 export const driversRepository = {
-  findAll(): Driver[] {
-    return db.drivers;
+  async findAll(): Promise<WithId<Driver>[]> {
+    return driverCollection.find().toArray();
   },
 
-  findById(id: number): Driver | null {
-    return db.drivers.find((d) => d.id === id) ?? null;
+  async findById(id: string): Promise<WithId<Driver> | null> {
+    return driverCollection.findOne({ _id: new ObjectId(id) });
   },
 
-  create(dto: DriverInputDto): Driver {
-    const newDriver: Driver = {
-      id: db.drivers.length ? db.drivers[db.drivers.length - 1].id + 1 : 1,
-      name: dto.name,
-      phoneNumber: dto.phoneNumber,
-      email: dto.email,
-      status: DriverStatus.Online,
-      vehicleMake: dto.vehicleMake,
-      vehicleModel: dto.vehicleModel,
-      vehicleYear: dto.vehicleYear,
-      vehicleLicensePlate: dto.vehicleLicensePlate,
-      vehicleDescription: dto.vehicleDescription,
-      vehicleFeatures: dto.vehicleFeatures,
-      createdAt: new Date(),
-    };
+  async create(newDriver: Driver): Promise<WithId<Driver>> {
+    const insertResult = await driverCollection.insertOne(newDriver);
 
-    db.drivers.push(newDriver);
-
-    return newDriver;
+    return { ...newDriver, _id: insertResult.insertedId };
   },
 
-  update(id: number, dto: DriverInputDto): boolean {
-    const driver = db.drivers.find((d) => d.id === id);
+  async update(id: string, dto: DriverInputDto): Promise<void> {
+    const updateResult = await driverCollection.updateOne(
+      {
+        _id: new ObjectId(id),
+      },
+      {
+        $set: {
+          name: dto.name,
+          phoneNumber: dto.phoneNumber,
+          email: dto.email,
+          vehicleMake: dto.vehicleMake,
+          vehicleModel: dto.vehicleModel,
+          vehicleYear: dto.vehicleYear,
+          vehicleLicensePlate: dto.vehicleLicensePlate,
+          vehicleDescription: dto.vehicleDescription,
+          vehicleFeatures: dto.vehicleFeatures,
+        },
+      },
+    );
 
-    if (!driver) {
-      return false;
-    }
-
-    driver.name = dto.name;
-    driver.phoneNumber = dto.phoneNumber;
-    driver.email = dto.email;
-    driver.vehicleMake = dto.vehicleMake;
-    driver.vehicleModel = dto.vehicleModel;
-    driver.vehicleYear = dto.vehicleYear;
-    driver.vehicleLicensePlate = dto.vehicleLicensePlate;
-    driver.vehicleDescription = dto.vehicleDescription;
-    driver.vehicleFeatures = dto.vehicleFeatures;
-
-    return true;
-  },
-
-  updateStatus(id: number, newStatus: DriverStatus): void {
-    const driver = db.drivers.find((d) => d.id === id);
-
-    if (!driver) {
+    if (updateResult.matchedCount < 1) {
       throw new Error('Driver not exist');
     }
 
-    driver.status = newStatus;
-    return
+    return;
   },
 
-  delete(id: number): void {
-    const index = db.drivers.findIndex((v) => v.id === id);
+  async updateStatus(
+    id: string,
+    newStatus: DriverStatus,
+    session?: ClientSession,
+  ): Promise<void> {
+    const updateResult = await driverCollection.updateOne(
+      {
+        _id: new ObjectId(id),
+      },
+      {
+        $set: {
+          status: newStatus,
+        },
+      },
+      session ? { session } : {},
+    );
 
-    if (index === -1) {
-     throw new Error('Driver not exist');
+    if (updateResult.matchedCount < 1) {
+      throw new Error('Driver not exist');
     }
 
-    db.drivers.splice(index, 1);
+    return;
+  },
+
+  async delete(id: string): Promise<void> {
+    const deleteResult = await driverCollection.deleteOne({
+      _id: new ObjectId(id),
+    });
+
+    if (deleteResult.deletedCount < 1) {
+      throw new Error('Driver not exist');
+    }
+
     return;
   },
 };

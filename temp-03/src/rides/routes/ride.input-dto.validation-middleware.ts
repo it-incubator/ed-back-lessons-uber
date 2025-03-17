@@ -15,8 +15,11 @@ export const clientNameValidation = body('clientName')
   .isLength({ min: 3, max: 100 });
 
 export const driverIdValidation = body('driverId')
-  .isInt({ gt: 0 })
-  .withMessage('ID must be a number');
+  .isString()
+  .withMessage('ID must be a string')
+  .trim()
+  .isMongoId()
+  .withMessage('Неверный формат ObjectId');
 
 export const priceValidation = body('price')
   .isFloat({ gt: 0 }) // Проверка, что цена - это число больше 0
