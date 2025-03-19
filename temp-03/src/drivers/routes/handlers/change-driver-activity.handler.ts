@@ -15,47 +15,53 @@ export async function changeDriverActivityHandler(
   req: Request<{ id: string }, {}, { status: ChangeDriverStatusInputDto }>,
   res: Response,
 ) {
-  const id = req.params.id;
+  try {
+    const id = req.params.id;
 
-  /*
-   * Можно менять только доступные статусы для изменения 'online'и 'offline'
-   */
-  if (!availableStatusesForChange.includes(req.body.status)) {
-    res
-      .status(HttpStatus.BadRequest)
-      .send(
-        createErrorMessages([{ field: 'status', message: 'incorrect status' }]),
-      );
+    /*
+     * Можно менять только доступные статусы для изменения 'online'и 'offline'
+     */
+    if (!availableStatusesForChange.includes(req.body.status)) {
+      res
+        .status(HttpStatus.BadRequest)
+        .send(
+          createErrorMessages([
+            { field: 'status', message: 'incorrect status' },
+          ]),
+        );
 
-    return;
+      return;
+    }
+
+    const driver = await driversRepository.findById(id);
+
+    if (!driver) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
+        );
+
+      return;
+    }
+
+    // Если у водителя сейчас есть заказ, то поменять ему статус нельзя
+    if (driver.status === DriverStatus.OnOrder) {
+      res
+        .status(HttpStatus.BadRequest)
+        .send(
+          createErrorMessages([
+            { field: 'status', message: 'The driver is currently on a job' },
+          ]),
+        );
+
+      return;
+    }
+
+    await driversRepository.updateStatus(id, req.body.status);
+
+    res.sendStatus(HttpStatus.NoContent);
+  } catch (e: unknown) {
+    res.sendStatus(HttpStatus.InternalServerError);
   }
-
-  const driver = await driversRepository.findById(id);
-
-  if (!driver) {
-    res
-      .status(HttpStatus.NotFound)
-      .send(
-        createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-      );
-
-    return;
-  }
-
-  // Если у водителя сейчас есть заказ, то поменять ему статус нельзя
-  if (driver.status === DriverStatus.OnOrder) {
-    res
-      .status(HttpStatus.BadRequest)
-      .send(
-        createErrorMessages([
-          { field: 'status', message: 'The driver is currently on a job' },
-        ]),
-      );
-
-    return;
-  }
-
-  await driversRepository.updateStatus(id, req.body.status);
-
-  res.sendStatus(HttpStatus.NoContent);
 }

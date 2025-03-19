@@ -8,21 +8,25 @@ export async function updateDriverHandler(
   req: Request<{ id: string }, {}, DriverInputDto>,
   res: Response,
 ) {
-  const id = req.params.id;
+  try {
+    const id = req.params.id;
 
-  const driver = driversRepository.findById(id);
+    const driver = driversRepository.findById(id);
 
-  if (!driver) {
-    res
-      .status(HttpStatus.NotFound)
-      .send(
-        createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-      );
+    if (!driver) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
+        );
 
-    return;
+      return;
+    }
+
+    await driversRepository.update(id, req.body);
+
+    res.sendStatus(HttpStatus.NoContent);
+  } catch (e: unknown) {
+    res.sendStatus(HttpStatus.InternalServerError);
   }
-
-  await driversRepository.update(id, req.body);
-
-  res.sendStatus(HttpStatus.NoContent);
 }

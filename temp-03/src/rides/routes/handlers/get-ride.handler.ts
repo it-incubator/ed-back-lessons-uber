@@ -5,19 +5,25 @@ import { createErrorMessages } from '../../../core/middlewares/validation/input-
 import { mapToRideViewModelUtil } from '../mappers/map-to-ride-view-model.util';
 
 export async function getRideHandler(req: Request, res: Response) {
-  const id = req.params.id;
+  try {
+    const id = req.params.id;
 
-  const ride = await ridesRepository.findById(id);
+    const ride = await ridesRepository.findById(id);
 
-  if (!ride) {
-    res
-      .status(HttpStatus.NotFound)
-      .send(createErrorMessages([{ field: 'id', message: 'Ride not found' }]));
+    if (!ride) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: 'id', message: 'Ride not found' }]),
+        );
 
-    return;
+      return;
+    }
+
+    const rideViewModel = mapToRideViewModelUtil(ride);
+
+    res.send(rideViewModel);
+  } catch (e: unknown) {
+    res.sendStatus(HttpStatus.InternalServerError);
   }
-
-  const rideViewModel = mapToRideViewModelUtil(ride);
-
-  res.send(rideViewModel);
 }

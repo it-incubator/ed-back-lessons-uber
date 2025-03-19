@@ -5,21 +5,25 @@ import { createErrorMessages } from '../../../core/middlewares/validation/input-
 import { mapToDriverViewModel } from '../mappers/map-to-driver-view-model.util';
 
 export async function getDriverHandler(req: Request, res: Response) {
-  const id = req.params.id;
+  try {
+    const id = req.params.id;
 
-  const driver = await driversRepository.findById(id);
+    const driver = await driversRepository.findById(id);
 
-  if (!driver) {
-    res
-      .status(HttpStatus.NotFound)
-      .send(
-        createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-      );
+    if (!driver) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
+        );
 
-    return;
+      return;
+    }
+
+    const driverViewModel = mapToDriverViewModel(driver);
+
+    res.status(HttpStatus.Ok).send(driverViewModel);
+  } catch (e: unknown) {
+    res.sendStatus(HttpStatus.InternalServerError);
   }
-
-  const driverViewModel = mapToDriverViewModel(driver);
-
-  res.status(HttpStatus.Ok).send(driverViewModel);
 }

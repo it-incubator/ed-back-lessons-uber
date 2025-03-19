@@ -10,31 +10,39 @@ export function finishRideHandler(
   req: Request<{ id: string }, {}, {}>,
   res: Response,
 ) {
-  const id = parseInt(req.params.id);
-  const ride = ridesRepository.findById(id);
+  try {
+    const id = parseInt(req.params.id);
+    const ride = ridesRepository.findById(id);
 
-  if (!ride) {
-    res
-      .status(HttpStatus.NotFound)
-      .send(createErrorMessages([{ field: 'id', message: 'Ride not found' }]));
+    if (!ride) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: 'id', message: 'Ride not found' }]),
+        );
 
-    return;
+      return;
+    }
+
+    //Если поездка уже завершена, то обновить статус ей нельзя
+    if (ride.status === RideStatus.Finished) {
+      res
+        .status(HttpStatus.BadRequest)
+        .send(
+          createErrorMessages([
+            { field: 'id', message: 'Ride is already over' },
+          ]),
+        );
+
+      return;
+    }
+
+    ridesRepository.updateStatus(id, RideStatus.Finished);
+
+    driversRepository.updateStatus(ride.driverId, DriverStatus.Online);
+
+    res.sendStatus(HttpStatus.NoContent);
+  } catch (e: unknown) {
+    res.sendStatus(HttpStatus.InternalServerError);
   }
-
-  //Если поездка уже завершена, то обновить статус ей нельзя
-  if (ride.status === RideStatus.Finished) {
-    res
-      .status(HttpStatus.BadRequest)
-      .send(
-        createErrorMessages([{ field: 'id', message: 'Ride is already over' }]),
-      );
-
-    return;
-  }
-
-  ridesRepository.updateStatus(id, RideStatus.Finished);
-
-  driversRepository.updateStatus(ride.driverId, DriverStatus.Online);
-
-  res.sendStatus(HttpStatus.NoContent);
 }

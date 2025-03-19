@@ -8,28 +8,32 @@ export function updateDriverStatusHandler(
   req: Request<{ id: string }, {}, { status: DriverStatus }>,
   res: Response,
 ) {
-  const id = parseInt(req.params.id);
-  const index = db.drivers.findIndex((v) => v.id === id);
+  try {
+    const id = parseInt(req.params.id);
+    const index = db.drivers.findIndex((v) => v.id === id);
 
-  if (index === -1) {
-    res
-      .status(HttpStatus.NotFound)
-      .send(
-        createErrorMessages([{ field: 'id', message: 'Vehicle not found' }]),
-      );
+    if (index === -1) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: 'id', message: 'Vehicle not found' }]),
+        );
 
-    return;
+      return;
+    }
+
+    if (!Object.values(DriverStatus).includes(req.body.status)) {
+      res
+        .status(HttpStatus.BadRequest)
+        .send([{ field: 'status', message: 'incorrect status' }]);
+
+      return;
+    }
+
+    db.drivers[index].status = req.body.status;
+
+    res.sendStatus(HttpStatus.NoContent);
+  } catch (e: unknown) {
+    res.sendStatus(HttpStatus.InternalServerError);
   }
-
-  if (!Object.values(DriverStatus).includes(req.body.status)) {
-    res
-      .status(HttpStatus.BadRequest)
-      .send([{ field: 'status', message: 'incorrect status' }]);
-
-    return;
-  }
-
-  db.drivers[index].status = req.body.status;
-
-  res.sendStatus(HttpStatus.NoContent);
 }
