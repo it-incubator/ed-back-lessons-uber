@@ -14,7 +14,6 @@ import { RIDES_PATH } from '../../../src/core/paths/paths';
 import { getRideById } from '../../utils/rides/get-ride-by-id';
 import { getDriverById } from '../../utils/drivers/get-driver-by-id';
 import { runDB, stopDb } from '../../../src/db/mongo.db';
-import { SETTINGS } from '../../../src/core/settings/settings';
 
 describe('Rides API', () => {
   const app = express();
@@ -23,7 +22,9 @@ describe('Rides API', () => {
   const adminToken = generateBasicAuthToken();
 
   beforeAll(async () => {
-    await runDB(SETTINGS.MONGO_URL_TEST);
+    await runDB(
+      'mongodb://root:example@localhost:27017,localhost:27018,localhost:27019/nest?retryWrites=true&loadBalanced=false&replicaSet=rs0&authSource=admin&readPreference=primary',
+    );
     await clearDb(app);
   });
 

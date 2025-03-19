@@ -93,8 +93,18 @@ describe('Driver API', () => {
     const driverResponse = await getDriverById(app, createdDriver.id);
 
     expect(driverResponse).toEqual({
-      ...driverUpdateData,
       id: createdDriver.id,
+      name: driverUpdateData.name,
+      phoneNumber: driverUpdateData.phoneNumber,
+      email: driverUpdateData.email,
+      vehicle: {
+        description: driverUpdateData.vehicleDescription,
+        features: driverUpdateData.vehicleFeatures,
+        licensePlate: driverUpdateData.vehicleLicensePlate,
+        make: driverUpdateData.vehicleMake,
+        model: driverUpdateData.vehicleModel,
+        year: driverUpdateData.vehicleYear,
+      },
       createdAt: expect.any(String),
       status: DriverStatus.Online,
     });
