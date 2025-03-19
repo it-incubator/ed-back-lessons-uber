@@ -37,7 +37,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Driver'
+                  $ref: '#/components/schemas/DriverViewModel'
     post:
       summary: Add a new driver
       tags: [ Drivers ]
@@ -55,7 +55,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Driver'
+                $ref: '#/components/schemas/DriverViewModel'
         400:
           description: Validation error
           content:
@@ -83,7 +83,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Driver'
+                $ref: '#/components/schemas/DriverViewModel'
         404:
           description: Driver not found
     put:
@@ -179,7 +179,7 @@ components:
       type: http
       scheme: basic
   schemas:
-    Driver:
+    DriverViewModel:
       type: object
       required:
         - id
@@ -187,11 +187,7 @@ components:
         - phoneNumber
         - email
         - status
-        - vehicleMake
-        - vehicleModel
-        - vehicleYear
-        - vehicleLicensePlate
-        - vehicleFeatures
+        - vehicle
         - createdAt
       properties:
         id:
@@ -215,34 +211,43 @@ components:
           enum: [ on-order, online, offline ]
           description: "The current status of the driver"
           example: "online"
-        vehicleMake:
-          type: string
-          description: "The make of the vehicle"
-          example: "Toyota"
-        vehicleModel:
-          type: string
-          description: "The model of the vehicle"
-          example: "Camry"
-        vehicleYear:
-          type: integer
-          description: "The year the vehicle was manufactured"
-          example: 2020
-        vehicleLicensePlate:
-          type: string
-          description: "The vehicle's license plate number"
-          example: "XYZ 1234"
-        vehicleDescription:
-          type: string
-          nullable: true
-          description: "A description of the vehicle, including any notable features or conditions"
-          example: "A spacious SUV with leather seats and a sunroof"
-        vehicleFeatures:
-          type: array
-          items:
-            type: string
-            enum: [ wi-fi, child-seat, pet-friendly ]
-          description: "Features available in the vehicle. Choose from the provided options"
-          example: [ "wi-fi", "pet-friendly" ]
+        vehicle:
+          type: object
+          required:
+            - make
+            - model
+            - year
+            - licensePlate
+            - features
+          properties:
+            make:
+              type: string
+              description: "The make of the vehicle"
+              example: "Toyota"
+            model:
+              type: string
+              description: "The model of the vehicle"
+              example: "Camry"
+            year:
+              type: integer
+              description: "The year the vehicle was manufactured"
+              example: 2020
+            licensePlate:
+              type: string
+              description: "The vehicle's license plate number"
+              example: "XYZ 1234"
+            description:
+              type: string
+              nullable: true
+              description: "A description of the vehicle, including any notable features or conditions"
+              example: "A spacious SUV with leather seats and a sunroof"
+            features:
+              type: array
+              items:
+                type: string
+                enum: [ wi-fi, child-seat, pet-friendly ]
+              description: "Features available in the vehicle. Choose from the provided options"
+              example: [ "wi-fi", "pet-friendly" ]
         createdAt:
           type: string
           format: date-time

@@ -27,7 +27,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Ride'
+                  $ref: '#/components/schemas/RideViewModel'
     post:
       summary: Create a new ride
       tags: [ Rides ]
@@ -45,7 +45,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Ride'
+                $ref: '#/components/schemas/RideViewModel'
         400:
           description: Validation error or the driver does not exist or the driver's status is not online
           content:
@@ -73,7 +73,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Ride'
+                $ref: '#/components/schemas/RideViewModel'
         404:
           description: Ride not found
 
@@ -105,19 +105,17 @@ paths:
 
 components:
   schemas:
-    Ride:
+    RideViewModel:
       type: object
       required:
         - id
         - clientName
-        - driverId
-        - driverName
-        - vehicleLicensePlate
-        - vehicleName
+        - driver
+        - vehicle
         - price
         - currency
         - status
-        - createdAt
+        - addresses
       properties:
         id:
           type: string
@@ -127,22 +125,34 @@ components:
           type: string
           description: "Name of the client who requested the ride"
           example: "Alice Johnson"
-        driverId:
-          type: string
-          description: "The unique identifier for the driver"
-          example: 5f1a2b3c4d5e6f7g8h9i0j1k2
-        driverName:
-          type: string
-          description: "The full name of the driver"
-          example: "Tom Rider"
-        vehicleLicensePlate:
-          type: string
-          example: "XYZ 1234"
-          description: "License plate of the vehicle"
-        vehicleName:
-          type: string
-          example: "Toyota Camry"
-          description: "Model of the vehicle"
+        driver:
+          type: object
+          required:
+            - id
+            - name
+          properties:
+            id:
+              type: string
+              description: "The unique identifier for the driver"
+              example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+            name:
+              type: string
+              description: "The full name of the driver"
+              example: "Tom Rider"
+        vehicle:
+          type: object
+          required:
+            - licensePlate
+            - name
+          properties:
+            licensePlate:
+              type: string
+              example: "XYZ 1234"
+              description: "License plate of the vehicle"
+            name:
+              type: string
+              example: "Toyota Camry"
+              description: "Model of the vehicle"
         price:
           type: number
           format: float
