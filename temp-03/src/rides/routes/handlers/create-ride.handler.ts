@@ -8,7 +8,7 @@ import { ridesRepository } from '../../repositories/rides.repository';
 import { ClientSession } from 'mongodb';
 import { client } from '../../../db/mongo.db';
 import { Ride, RideStatus } from '../../types/ride';
-import { createRideViewModelUtil } from '../util/create-ride-view-model.util';
+import { mapToRideViewModelUtil } from '../mappers/map-to-ride-view-model.util';
 
 export async function createRideHandler(
   req: Request<{}, {}, RideInputDto>,
@@ -35,10 +35,14 @@ export async function createRideHandler(
   try {
     const newRide: Ride = {
       clientName: req.body.clientName,
-      driverId: req.body.driverId,
-      driverName: driver.name,
-      vehicleLicensePlate: driver.vehicleLicensePlate,
-      vehicleName: `${driver.vehicleMake} ${driver.vehicleModel}`,
+      driver: {
+        id: req.body.driverId,
+        name: driver.name,
+      },
+      vehicle: {
+        licensePlate: driver.vehicle.licensePlate,
+        name: `${driver.vehicle.make} ${driver.vehicle.model}`,
+      },
       price: req.body.price,
       currency: req.body.currency,
       status: RideStatus.InProgress,
@@ -62,14 +66,14 @@ export async function createRideHandler(
     // Подтверждение транзакции
     await session.commitTransaction();
 
-    const rideViewModel = createRideViewModelUtil(createdRide);
+    const rideViewModel = mapToRideViewModelUtil(createdRide);
 
     res.status(HttpStatus.Created).send(rideViewModel);
   } catch (e: unknown) {
     // Откат транзакции в случае ошибки
 
     await session.abortTransaction();
-    throw new Error(`Transaction aborted due to error: ${e}`);
+    res.sendStatus(HttpStatus.InternalServerError);
   } finally {
     await session.endSession();
   }

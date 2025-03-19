@@ -41,7 +41,7 @@ export async function finishRideHandler(
     await ridesRepository.updateStatus(id, RideStatus.Finished, session);
 
     await driversRepository.updateStatus(
-      ride.driverId,
+      ride.driver.id,
       DriverStatus.Online,
       session,
     );
@@ -53,7 +53,7 @@ export async function finishRideHandler(
   } catch (e: unknown) {
     // Откат транзакции в случае ошибки
     await session.abortTransaction();
-    throw new Error(`Transaction aborted due to error: ${e}`);
+    res.sendStatus(HttpStatus.InternalServerError);
   } finally {
     await session.endSession();
   }

@@ -10,10 +10,14 @@ export enum RideStatus {
 
 export type Ride = {
   clientName: string;
-  driverId: string;
-  driverName: string;
-  vehicleLicensePlate: string;
-  vehicleName: string;
+  driver: {
+    id: string;
+    name: string;
+  };
+  vehicle: {
+    licensePlate: string;
+    name: string;
+  };
   price: number;
   currency: Currency;
   status: RideStatus;

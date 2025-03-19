@@ -2,14 +2,12 @@ import { WithId } from 'mongodb';
 import { Ride } from '../../types/ride';
 import { RideViewModel } from '../../types/ride-view-model';
 
-export function createRideViewModelUtil(ride: WithId<Ride>): RideViewModel {
+export function mapToRideViewModelUtil(ride: WithId<Ride>): RideViewModel {
   return {
     id: ride._id.toString(),
     clientName: ride.clientName,
-    driverId: ride.driverId,
-    driverName: ride.driverName,
-    vehicleLicensePlate: ride.vehicleLicensePlate,
-    vehicleName: ride.vehicleName,
+    driver: ride.driver,
+    vehicle: ride.vehicle,
     price: ride.price,
     currency: ride.currency,
     status: ride.status,

@@ -3,7 +3,7 @@ import { DriverInputDto } from '../../dto/driver.input-dto';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { driversRepository } from '../../repositories/drivers.repository';
 import { Driver, DriverStatus } from '../../types/driver';
-import { createDriverViewModel } from '../util/create-driver-view-model.util';
+import { mapToDriverViewModel } from '../mappers/map-to-driver-view-model.util';
 
 export async function createDriverHandler(
   req: Request<{}, {}, DriverInputDto>,
@@ -14,18 +14,20 @@ export async function createDriverHandler(
     phoneNumber: req.body.phoneNumber,
     email: req.body.email,
     status: DriverStatus.Online,
-    vehicleMake: req.body.vehicleMake,
-    vehicleModel: req.body.vehicleModel,
-    vehicleYear: req.body.vehicleYear,
-    vehicleLicensePlate: req.body.vehicleLicensePlate,
-    vehicleDescription: req.body.vehicleDescription,
-    vehicleFeatures: req.body.vehicleFeatures,
+    vehicle: {
+      make: req.body.vehicleMake,
+      model: req.body.vehicleModel,
+      year: req.body.vehicleYear,
+      licensePlate: req.body.vehicleLicensePlate,
+      description: req.body.vehicleDescription,
+      features: req.body.vehicleFeatures,
+    },
     createdAt: new Date(),
   };
 
   const createdDriver = await driversRepository.create(newDriver);
 
-  const driverViewModel = createDriverViewModel(createdDriver);
+  const driverViewModel = mapToDriverViewModel(createdDriver);
 
   res.status(HttpStatus.Created).send(driverViewModel);
 }

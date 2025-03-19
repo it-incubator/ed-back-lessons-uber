@@ -15,11 +15,13 @@ export type Driver = {
   phoneNumber: string;
   email: string;
   status: DriverStatus;
-  vehicleMake: string; // e.g., Toyota
-  vehicleModel: string; // e.g., Camry
-  vehicleYear: number;
-  vehicleLicensePlate: string;
-  vehicleDescription: string | null;
-  vehicleFeatures: VehicleFeature[];
+  vehicle: {
+    make: string; // e.g., Toyota
+    model: string; // e.g., Camry
+    year: number;
+    licensePlate: string;
+    description: string | null;
+    features: VehicleFeature[];
+  };
   createdAt: Date;
 };

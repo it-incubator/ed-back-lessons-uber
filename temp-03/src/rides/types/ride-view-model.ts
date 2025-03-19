@@ -3,10 +3,14 @@ import { Currency, RideStatus } from './ride';
 export type RideViewModel = {
   id: string;
   clientName: string;
-  driverId: string;
-  driverName: string;
-  vehicleLicensePlate: string;
-  vehicleName: string;
+  driver: {
+    id: string;
+    name: string;
+  };
+  vehicle: {
+    licensePlate: string;
+    name: string;
+  };
   price: number;
   currency: Currency;
   status: RideStatus;

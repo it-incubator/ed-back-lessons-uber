@@ -18,7 +18,6 @@ import { clearDb } from '../../utils/clear-db';
 import { getDriverById } from '../../utils/drivers/get-driver-by-id';
 import { updateDriver } from '../../utils/drivers/update-driver';
 import { runDB, stopDb } from '../../../src/db/mongo.db';
-import { SETTINGS } from '../../../src/core/settings/settings';
 
 describe('Driver API', () => {
   const app = express();
@@ -27,7 +26,9 @@ describe('Driver API', () => {
   const adminToken = generateBasicAuthToken();
 
   beforeAll(async () => {
-    await runDB(SETTINGS.MONGO_URL_TEST);
+    await runDB(
+      'mongodb://root:example@localhost:27017,localhost:27018,localhost:27019/nest?retryWrites=true&loadBalanced=false&replicaSet=rs0&authSource=admin&readPreference=primary',
+    );
     await clearDb(app);
   });
 
