@@ -8,18 +8,24 @@ export function updateDriverHandler(
   req: Request<{ id: string }, {}, DriverInputDto>,
   res: Response,
 ) {
-  const id = parseInt(req.params.id);
+  try {
+    const id = parseInt(req.params.id);
 
-  const isUpdated = driversRepository.update(id, req.body);
+    const driver = driversRepository.findById(id);
 
-  if (!isUpdated) {
-    res
-      .status(HttpStatus.NotFound)
-      .send(
-        createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-      );
-    return;
+    if (!driver) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
+        );
+      return;
+    }
+
+    driversRepository.update(id, req.body);
+
+    res.sendStatus(HttpStatus.NoContent);
+  } catch (e: unknown) {
+    res.sendStatus(HttpStatus.InternalServerError);
   }
-
-  res.sendStatus(HttpStatus.NoContent);
 }

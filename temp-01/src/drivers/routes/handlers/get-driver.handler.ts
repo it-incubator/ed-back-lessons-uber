@@ -4,19 +4,23 @@ import { HttpStatus } from '../../../core/types/http-statuses';
 import { createErrorMessages } from '../../../core/utils/error.utils';
 
 export function getDriverHandler(req: Request, res: Response) {
-  const id = parseInt(req.params.id);
+  try {
+    const id = parseInt(req.params.id);
 
-  const driver = db.drivers.find((d) => d.id === id);
+    const driver = db.drivers.find((d) => d.id === id);
 
-  if (!driver) {
-    res
-      .status(HttpStatus.NotFound)
-      .send(
-        createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-      );
+    if (!driver) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
+        );
 
-    return;
+      return;
+    }
+
+    res.send(driver);
+  } catch (e: unknown) {
+    res.sendStatus(HttpStatus.InternalServerError);
   }
-
-  res.send(driver);
 }

@@ -5,6 +5,6 @@ export type RideInputDto = {
   price: number;
   currency: Currency;
   driverId: number;
-  startAddress: string;
-  endAddress: string;
+  fromAddress: string;
+  toAddress: string;
 };

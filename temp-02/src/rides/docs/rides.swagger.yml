@@ -172,11 +172,11 @@ components:
         addresses:
           type: object
           properties:
-            start:
+            from:
               type: string
               example: "123 Main St, Cityville"
               description: "Starting address of the ride"
-            end:
+            to:
               type: string
               example: "456 Elm St, Townsville"
               description: "Ending address of the ride"
@@ -208,11 +208,11 @@ components:
           type: integer
           description: "The unique identifier for the driver"
           example: 2
-        startAddress:
+        fromAddress:
           type: string
           example: "123 Main St, Cityville"
           description: "Starting address of the ride"
-        endAddress:
+        toAddress:
           type: string
           example: "456 Elm St, Townsville"
           description: "Ending address of the ride"
