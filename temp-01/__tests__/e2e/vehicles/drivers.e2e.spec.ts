@@ -1,4 +1,6 @@
+// @ts-ignore
 import request from 'supertest';
+// @ts-ignore
 import express from 'express';
 
 import {
