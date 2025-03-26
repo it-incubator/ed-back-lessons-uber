@@ -1,5 +1,4 @@
 import express, { Express } from 'express';
-import cors from 'cors';
 import { setupSwagger } from './core/swagger/setup-swagger';
 import { driversRouter } from './drivers/routes/drivers.route';
 import { testingRouter } from './testing/routes/testing.route';
@@ -11,7 +10,6 @@ import { DRIVERS_PATH, RIDES_PATH, TESTING_PATH } from './core/paths/paths';
  * @param app
  */
 export const setupApp = (app: Express) => {
-  app.use(cors());
   app.use(express.json());
 
   app.use(DRIVERS_PATH, driversRouter);
