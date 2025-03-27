@@ -1,4 +1,6 @@
+// @ts-ignore
 import express from 'express';
+// @ts-ignore
 import request from 'supertest';
 import { setupApp } from '../../../src/setup-app';
 import { generateBasicAuthToken } from '../../utils/generate-admin-auth-token';
@@ -36,8 +38,8 @@ describe('Rides API body validation check', () => {
         clientName: '   ', // empty string
         price: 'bla bla', // not a number
         currency: 1, // not a string
-        startAddress: '', // empty string
-        endAddress: true, // not a string
+        fromAddress: '', // empty string
+        toAddress: true, // not a string
         driverId: 'bam', //not a number
       } as unknown as Partial<RideInputDto>,
       HttpStatus.BadRequest,
@@ -51,7 +53,7 @@ describe('Rides API body validation check', () => {
         clientName: 'LA', // short string
         price: 0, // can not be 0
         currency: 'byn', // not in Currency
-        startAddress: 'street', // short string
+        fromAddress: 'street', // short string
         driverId: 0, //can not be 0
       } as unknown as Partial<RideInputDto>,
       HttpStatus.BadRequest,
