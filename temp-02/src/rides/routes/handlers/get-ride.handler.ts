@@ -4,23 +4,17 @@ import { HttpStatus } from '../../../core/types/http-statuses';
 import { createErrorMessages } from '../../../core/middlewares/validation/input-validtion-result.middleware';
 
 export function getRideHandler(req: Request, res: Response) {
-  try {
-    const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id);
 
-    const ride = ridesRepository.findById(id);
+  const ride = ridesRepository.findById(id);
 
-    if (!ride) {
-      res
-        .status(HttpStatus.NotFound)
-        .send(
-          createErrorMessages([{ field: 'id', message: 'Ride not found' }]),
-        );
+  if (!ride) {
+    res
+      .status(HttpStatus.NotFound)
+      .send(createErrorMessages([{ field: 'id', message: 'Ride not found' }]));
 
-      return;
-    }
-
-    res.send(ride);
-  } catch (e: unknown) {
-    res.sendStatus(HttpStatus.InternalServerError);
+    return;
   }
+
+  res.send(ride);
 }

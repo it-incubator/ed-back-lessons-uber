@@ -1,8 +1,6 @@
 import { body } from 'express-validator';
 import { VehicleFeature } from '../types/driver';
 
-import { availableStatusesForChange } from './handlers/change-driver-activity.handler';
-
 const nameValidation = body('name')
   .isString()
   .withMessage('name should be string')
@@ -78,14 +76,6 @@ const vehicleFeaturesValidation = body('vehicleFeatures')
     }
     return true;
   });
-
-export const changeDriverActivityValidation = body('status')
-  .isString()
-  .withMessage('status should be string')
-  .trim()
-  .isLength({ min: 1 })
-  .isIn(availableStatusesForChange)
-  .withMessage('Invalid status value');
 
 export const driverInputDtoValidation = [
   nameValidation,
