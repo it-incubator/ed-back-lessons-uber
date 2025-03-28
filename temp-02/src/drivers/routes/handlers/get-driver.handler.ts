@@ -4,23 +4,19 @@ import { driversRepository } from '../../repositories/drivers.repository';
 import { createErrorMessages } from '../../../core/middlewares/validation/input-validtion-result.middleware';
 
 export function getDriverHandler(req: Request, res: Response) {
-  try {
-    const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id);
 
-    const driver = driversRepository.findById(id);
+  const driver = driversRepository.findById(id);
 
-    if (!driver) {
-      res
-        .status(HttpStatus.NotFound)
-        .send(
-          createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
-        );
+  if (!driver) {
+    res
+      .status(HttpStatus.NotFound)
+      .send(
+        createErrorMessages([{ field: 'id', message: 'Driver not found' }]),
+      );
 
-      return;
-    }
-
-    res.status(HttpStatus.Ok).send(driver);
-  } catch (e: unknown) {
-    res.sendStatus(HttpStatus.InternalServerError);
+    return;
   }
+
+  res.status(HttpStatus.Ok).send(driver);
 }

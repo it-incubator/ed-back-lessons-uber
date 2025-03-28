@@ -1,11 +1,10 @@
+// @ts-ignore
 import request from 'supertest';
-import {
-  DriverStatus,
-  VehicleFeature,
-} from '../../../src/drivers/types/driver';
+// @ts-ignore
+import express from 'express';
+import { VehicleFeature } from '../../../src/drivers/types/driver';
 import { setupApp } from '../../../src/setup-app';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
-import express from 'express';
 import { DriverInputDto } from '../../../src/drivers/dto/driver.input-dto';
 
 describe('Driver API body validation check', () => {
@@ -124,7 +123,6 @@ describe('Driver API body validation check', () => {
       ...correctTestDriverData,
       id: createdDriverId,
       createdAt: expect.any(String),
-      status: DriverStatus.Online,
     });
   });
 
@@ -156,33 +154,6 @@ describe('Driver API body validation check', () => {
       ...correctTestDriverData,
       id: createdDriverId,
       createdAt: expect.any(String),
-      status: DriverStatus.Online,
     });
-  });
-
-  it('should not update driver status when incorrect status passed; PUT /api/drivers/:id/status', async () => {
-    const {
-      body: { id: createdDriverId },
-    } = await request(app)
-      .post('/api/drivers')
-      .send({ ...correctTestDriverData })
-      .expect(HttpStatus.Created);
-
-    const driverBeforeUpdateResponse = await request(app).get(
-      `/api/drivers/${createdDriverId}`,
-    );
-
-    await request(app)
-      .put(`/api/drivers/${createdDriverId}/status`)
-      .send({ status: 'invalid-status' })
-      .expect(HttpStatus.BadRequest);
-
-    const driverAfterUpdateResponse = await request(app).get(
-      `/api/drivers/${createdDriverId}`,
-    );
-
-    expect(driverAfterUpdateResponse.body.status).toBe(
-      driverBeforeUpdateResponse.body.status,
-    );
   });
 });

@@ -1,4 +1,4 @@
-import { Driver, DriverStatus, VehicleFeature } from '../drivers/types/driver';
+import { Driver, VehicleFeature } from '../drivers/types/driver';
 import { Ride } from '../rides/types/ride';
 
 export const db = {
@@ -8,7 +8,6 @@ export const db = {
       name: 'Tom Rider',
       phoneNumber: '123-456-7890',
       email: 'tom.rider@example.com',
-      status: DriverStatus.OnOrder,
       vehicleMake: 'BMW',
       vehicleModel: 'Cabrio',
       vehicleYear: 2020,
@@ -22,7 +21,6 @@ export const db = {
       name: 'Tom Rider',
       phoneNumber: '123-456-7890',
       email: 'tom.rider@example.com',
-      status: DriverStatus.Online,
       vehicleMake: 'Ford',
       vehicleModel: 'Mustang Shelby GT',
       vehicleYear: 2019,
@@ -36,7 +34,6 @@ export const db = {
       name: 'Tom Rider',
       phoneNumber: '123-456-7890',
       email: 'tom.rider@example.com',
-      status: DriverStatus.OnOrder,
       vehicleMake: 'BMW',
       vehicleModel: '18',
       vehicleYear: 2021,

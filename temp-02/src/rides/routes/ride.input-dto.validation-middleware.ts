@@ -1,12 +1,5 @@
 import { body } from 'express-validator';
-import { Currency, RideStatus } from '../types/ride';
-
-export const rideStatusValidation = body('status')
-  .isString()
-  .withMessage('status should be string')
-  .trim()
-  .isIn(Object.values(RideStatus))
-  .withMessage('Invalid status value');
+import { Currency } from '../types/ride';
 
 export const clientNameValidation = body('clientName')
   .isString()

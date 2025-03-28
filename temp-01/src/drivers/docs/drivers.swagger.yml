@@ -4,20 +4,10 @@ info:
   version: 1.0.0
 
 tags:
-  - name: Testing
-    description: API for clearing the database
   - name: Drivers
     description: API for managing drivers
 
 paths:
-  /api/testing/all-data:
-    delete:
-      summary: "Clear database: delete all data from all tables/collections"
-      tags: [ Testing ]
-      responses:
-        204:
-          description: All data deleted
-
   /api/drivers:
     get:
       summary: Get a list of all drivers
@@ -119,37 +109,6 @@ paths:
           description: Driver deleted successfully
         404:
           description: Driver not found
-
-  /api/drivers/{id}/status:
-    put:
-      summary: Update driver status by ID
-      tags: [ Drivers ]
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-            example: 2
-          description: The ID of the driver to update status
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DriverStatusInputDto'
-      responses:
-        204:
-          description: Driver status updated successfully
-        400:
-          description: Incorrect status value
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        404:
-          description: Driver not found
-
 components:
   schemas:
     Driver:
@@ -159,7 +118,6 @@ components:
         - name
         - phoneNumber
         - email
-        - status
         - vehicleMake
         - vehicleModel
         - vehicleYear
@@ -183,11 +141,6 @@ components:
           type: string
           description: "The driver's email address"
           example: "tom.rider@example.com"
-        status:
-          type: string
-          enum: [ on-order, online, offline ]
-          description: "The current status of the driver"
-          example: "online"
         vehicleMake:
           type: string
           description: "The make of the vehicle"
@@ -273,16 +226,6 @@ components:
             enum: [ wi-fi, child-seat, pet-friendly ]
           description: "Features available in the vehicle. Choose from the provided options"
           example: [ "wi-fi", "pet-friendly" ]
-    DriverStatusInputDto:
-      type: object
-      required:
-        - status
-      properties:
-        status:
-          type: string
-          enum: [ on-order, online, offline ]
-          description: "The current status of the driver"
-          example: "online"
     ValidationError:
       type: object
       properties:

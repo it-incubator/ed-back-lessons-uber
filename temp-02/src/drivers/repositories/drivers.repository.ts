@@ -1,4 +1,4 @@
-import { Driver, DriverStatus } from '../types/driver';
+import { Driver } from '../types/driver';
 import { db } from '../../db/in-memory.db';
 import { DriverInputDto } from '../dto/driver.input-dto';
 
@@ -34,17 +34,6 @@ export const driversRepository = {
     driver.vehicleDescription = dto.vehicleDescription;
     driver.vehicleFeatures = dto.vehicleFeatures;
 
-    return;
-  },
-
-  updateStatus(id: number, newStatus: DriverStatus): void {
-    const driver = db.drivers.find((d) => d.id === id);
-
-    if (!driver) {
-      throw new Error('Driver not exist');
-    }
-
-    driver.status = newStatus;
     return;
   },
 

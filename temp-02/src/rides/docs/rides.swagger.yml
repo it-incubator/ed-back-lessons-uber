@@ -77,32 +77,6 @@ paths:
         404:
           description: Ride not found
 
-  /api/rides/{id}/actions/finish:
-    post:
-      summary: Finish ride by ID
-      tags: [ Rides ]
-      security:
-        - BasicAuth: [ ]
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: The unique identifier of the ride
-          schema:
-            type: integer
-            example: 5
-      responses:
-        204:
-          description: Ride finished successfully
-        400:
-          description: The ride has already been finished
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        404:
-          description: Ride not found
-
 components:
   schemas:
     Ride:
@@ -116,7 +90,6 @@ components:
         - vehicleName
         - price
         - currency
-        - status
         - createdAt
       properties:
         id:
@@ -153,11 +126,6 @@ components:
           enum: [ usd, eur ]
           example: "usd"
           description: "Currency in which the cost is specified"
-        status:
-          type: string
-          enum: [ "in progress", "finished" ]
-          example: "in progress"
-          description: "Status of the ride (in progress or finished)"
         createdAt:
           type: string
           format: date-time
