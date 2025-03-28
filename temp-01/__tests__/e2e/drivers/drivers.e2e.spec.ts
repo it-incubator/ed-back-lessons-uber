@@ -3,10 +3,7 @@ import request from 'supertest';
 // @ts-ignore
 import express from 'express';
 
-import {
-  DriverStatus,
-  VehicleFeature,
-} from '../../../src/drivers/types/driver';
+import { VehicleFeature } from '../../../src/drivers/types/driver';
 import { setupApp } from '../../../src/setup-app';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { DriverInputDto } from '../../../src/drivers/dto/driver.input-dto';
@@ -51,7 +48,7 @@ describe('Driver API', () => {
       .send(newDriver)
       .expect(HttpStatus.Created);
 
-    expect(createdDriverResponse.body.status).toBe(DriverStatus.Online);
+    expect(createdDriverResponse.body.name).toBe(newDriver.name);
   });
 
   it('should return drivers list; GET /api/drivers', async () => {
@@ -121,32 +118,7 @@ describe('Driver API', () => {
       ...driverUpdateData,
       id: createResponse.body.id,
       createdAt: expect.any(String),
-      status: DriverStatus.Online,
     });
-  });
-
-  it('should update driver status; PUT /api/drivers/:id/status', async () => {
-    const {
-      body: { id: createdDriverId },
-    } = await request(app)
-      .post('/api/drivers')
-      .send({ ...testDriverData, name: 'Another Driver' })
-      .expect(HttpStatus.Created);
-
-    const statusUpdateData = {
-      status: DriverStatus.OnOrder,
-    };
-
-    await request(app)
-      .put(`/api/drivers/${createdDriverId}/status`)
-      .send(statusUpdateData)
-      .expect(HttpStatus.NoContent);
-
-    const driverResponse = await request(app).get(
-      `/api/drivers/${createdDriverId}`,
-    );
-
-    expect(driverResponse.body.status).toBe(DriverStatus.OnOrder);
   });
 
   it('DELETE /api/drivers/:id and check after NOT FOUND', async () => {
