@@ -3,8 +3,6 @@ import { RideStatus } from '../../types/ride';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { createErrorMessages } from '../../../core/middlewares/validation/input-validtion-result.middleware';
 import { ridesRepository } from '../../repositories/rides.repository';
-import { driversRepository } from '../../../drivers/repositories/drivers.repository';
-import { DriverStatus } from '../../../drivers/types/driver';
 import { client } from '../../../db/mongo.db';
 import { ClientSession } from 'mongodb';
 
@@ -39,12 +37,6 @@ export async function finishRideHandler(
 
   try {
     await ridesRepository.updateStatus(id, RideStatus.Finished, session);
-
-    await driversRepository.updateStatus(
-      ride.driver.id,
-      DriverStatus.Online,
-      session,
-    );
 
     // Подтверждение транзакции
     await session.commitTransaction();

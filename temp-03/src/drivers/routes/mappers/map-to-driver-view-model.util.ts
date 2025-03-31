@@ -8,7 +8,6 @@ export function mapToDriverViewModel(driver: WithId<Driver>): DriverViewModel {
     name: driver.name,
     phoneNumber: driver.phoneNumber,
     email: driver.email,
-    status: driver.status,
     vehicle: driver.vehicle,
     createdAt: driver.createdAt,
   };

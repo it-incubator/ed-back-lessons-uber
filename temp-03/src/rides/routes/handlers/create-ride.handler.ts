@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { RideInputDto } from '../../dto/ride-input.dto';
 import { driversRepository } from '../../../drivers/repositories/drivers.repository';
-import { DriverStatus } from '../../../drivers/types/driver';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { createErrorMessages } from '../../../core/middlewares/validation/input-validtion-result.middleware';
 import { ridesRepository } from '../../repositories/rides.repository';
@@ -18,7 +17,7 @@ export async function createRideHandler(
 
   const driver = await driversRepository.findById(driverId);
 
-  if (!driver || driver.status !== DriverStatus.Online) {
+  if (!driver) {
     res
       .status(HttpStatus.BadRequest)
       .send(
@@ -58,11 +57,6 @@ export async function createRideHandler(
 
     const createdRide = await ridesRepository.createRide(newRide, session);
 
-    await driversRepository.updateStatus(
-      driver._id.toString(),
-      DriverStatus.OnOrder,
-      session,
-    );
     // Подтверждение транзакции
     await session.commitTransaction();
 

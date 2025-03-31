@@ -1,7 +1,7 @@
-import { Driver, DriverStatus } from '../types/driver';
+import { Driver } from '../types/driver';
 import { DriverInputDto } from '../dto/driver.input-dto';
 import { driverCollection } from '../../db/mongo.db';
-import { ClientSession, ObjectId, WithId } from 'mongodb';
+import { ObjectId, WithId } from 'mongodb';
 
 export const driversRepository = {
   async findAll(): Promise<WithId<Driver>[]> {
@@ -38,30 +38,6 @@ export const driversRepository = {
           },
         },
       },
-    );
-
-    if (updateResult.matchedCount < 1) {
-      throw new Error('Driver not exist');
-    }
-
-    return;
-  },
-
-  async updateStatus(
-    id: string,
-    newStatus: DriverStatus,
-    session?: ClientSession,
-  ): Promise<void> {
-    const updateResult = await driverCollection.updateOne(
-      {
-        _id: new ObjectId(id),
-      },
-      {
-        $set: {
-          status: newStatus,
-        },
-      },
-      session ? { session } : {},
     );
 
     if (updateResult.matchedCount < 1) {
