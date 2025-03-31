@@ -114,17 +114,16 @@ components:
         - vehicle
         - price
         - currency
-        - status
         - addresses
       properties:
         id:
           type: string
-          description: "Unique identifier for the ride"
+          description: Unique identifier for the ride
           example: 60c72b2f9b1e8a001c8e4f1a
         clientName:
           type: string
-          description: "Name of the client who requested the ride"
-          example: "Alice Johnson"
+          description: Name of the client who requested the ride
+          example: Alice Johnson
         driver:
           type: object
           required:
@@ -133,12 +132,12 @@ components:
           properties:
             id:
               type: string
-              description: "The unique identifier for the driver"
+              description: The unique identifier for the driver
               example: 5f1a2b3c4d5e6f7g8h9i0j1k2
             name:
               type: string
-              description: "The full name of the driver"
-              example: "Tom Rider"
+              description: The full name of the driver
+              example: Tom Rider
         vehicle:
           type: object
           required:
@@ -147,49 +146,44 @@ components:
           properties:
             licensePlate:
               type: string
-              example: "XYZ 1234"
-              description: "License plate of the vehicle"
+              example: XYZ 1234
+              description: License plate of the vehicle
             name:
               type: string
-              example: "Toyota Camry"
-              description: "Model of the vehicle"
+              example: Toyota Camry
+              description: Model of the vehicle
         price:
           type: number
           format: float
           example: 15.75
-          description: "Cost of the trip"
+          description: Cost of the trip
         currency:
           type: string
           enum: [ usd, eur ]
-          example: "usd"
-          description: "Currency in which the cost is specified"
-        status:
-          type: string
-          enum: [ "in progress", "finished" ]
-          example: "in progress"
-          description: "Status of the ride (in progress or finished)"
+          example: usd
+          description: Currency in which the cost is specified
         createdAt:
           type: string
           format: date-time
-          example: "2023-03-01T14:30:00Z"
-          description: "Date and time when the ride was created"
+          example: 2023-03-01T14:30:00Z
+          description: Date and time when the ride was created
         updatedAt:
           type: string
           format: date-time
           nullable: true
           example: null
-          description: "Date and time of the last update to the ride (if applicable)"
+          description: Date and time of the last update to the ride (if applicable)
         addresses:
           type: object
           properties:
             from:
               type: string
-              example: "123 Main St, Cityville"
-              description: "Starting address of the ride"
+              example: 123 Main St, Cityville
+              description: Starting address of the ride
             to:
               type: string
-              example: "456 Elm St, Townsville"
-              description: "Ending address of the ride"
+              example: 456 Elm St, Townsville
+              description: Ending address of the ride
     RideInputDto:
       type: object
       required:
@@ -202,39 +196,39 @@ components:
       properties:
         clientName:
           type: string
-          description: "Name of the client who requested the ride"
-          example: "Alice Johnson"
+          description: Name of the client who requested the ride
+          example: Alice Johnson
         price:
           type: number
           format: float
           example: 15.75
-          description: "Cost of the trip"
+          description: Cost of the trip
         currency:
           type: string
           enum: [ usd, eur ]
-          example: "usd"
-          description: "Currency in which the cost is specified"
+          example: usd
+          description: Currency in which the cost is specified
         driverId:
           type: string
-          description: "The unique identifier for the driver"
+          description: The unique identifier for the driver
           example: 5f1a2b3c4d5e6f7g8h9i0j1k2
         fromAddress:
           type: string
-          example: "123 Main St, Cityville"
-          description: "Starting address of the ride"
+          example: 123 Main St, Cityville
+          description: Starting address of the ride
         toAddress:
           type: string
-          example: "456 Elm St, Townsville"
-          description: "Ending address of the ride"
+          example: 456 Elm St, Townsville
+          description: Ending address of the ride
     ValidationError:
       type: object
       properties:
         field:
           type: string
-          example: "clientName"
+          example: clientName
         message:
           type: string
-          example: "Client name is required"
+          example: Client name is required
     ValidationErrorResponse:
       type: object
       properties:

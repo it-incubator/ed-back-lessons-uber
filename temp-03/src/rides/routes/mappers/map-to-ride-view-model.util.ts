@@ -10,7 +10,6 @@ export function mapToRideViewModelUtil(ride: WithId<Ride>): RideViewModel {
     vehicle: ride.vehicle,
     price: ride.price,
     currency: ride.currency,
-    status: ride.status,
     startedAt: ride.startedAt,
     finishedAt: ride.finishedAt,
     addresses: ride.addresses,

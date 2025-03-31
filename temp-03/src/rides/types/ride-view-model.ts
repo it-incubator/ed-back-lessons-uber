@@ -1,4 +1,4 @@
-import { Currency, RideStatus } from './ride';
+import { Currency } from './ride';
 
 export type RideViewModel = {
   id: string;
@@ -13,7 +13,6 @@ export type RideViewModel = {
   };
   price: number;
   currency: Currency;
-  status: RideStatus;
   startedAt: Date | null;
   finishedAt: Date | null;
   addresses: {

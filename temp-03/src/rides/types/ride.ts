@@ -3,11 +3,6 @@ export enum Currency {
   EUR = 'eur',
 }
 
-export enum RideStatus {
-  InProgress = 'in-progress',
-  Finished = 'finished',
-}
-
 export type Ride = {
   clientName: string;
   driver: {
@@ -20,7 +15,6 @@ export type Ride = {
   };
   price: number;
   currency: Currency;
-  status: RideStatus;
   createdAt: Date;
   updatedAt: Date | null;
   startedAt: Date | null;

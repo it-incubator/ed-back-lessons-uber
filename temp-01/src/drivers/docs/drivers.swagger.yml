@@ -52,7 +52,7 @@ paths:
         - in: path
           name: id
           required: true
-          description: "The unique identifier of the driver"
+          description: The unique identifier of the driver
           schema:
             type: integer
             example: 2
@@ -72,7 +72,7 @@ paths:
         - in: path
           name: id
           required: true
-          description: "The unique identifier of the driver"
+          description: The unique identifier of the driver
           schema:
             type: integer
             example: 2
@@ -100,7 +100,7 @@ paths:
         - in: path
           name: id
           required: true
-          description: "The unique identifier of the driver"
+          description: The unique identifier of the driver
           schema:
             type: integer
             example: 2
@@ -127,53 +127,53 @@ components:
       properties:
         id:
           type: integer
-          description: "The unique identifier for the driver"
+          description: The unique identifier for the driver
           example: 2
         name:
           type: string
-          description: "The full name of the driver"
-          example: "Tom Rider"
+          description: The full name of the driver
+          example: Tom Rider
         phoneNumber:
           type: string
-          description: "The driver's phone number"
-          example: "123-456-7890"
+          description: The driver's phone number
+          example: 123-456-7890
         email:
           type: string
-          description: "The driver's email address"
-          example: "tom.rider@example.com"
+          description: The driver's email address
+          example: tom.rider@example.com
         vehicleMake:
           type: string
-          description: "The make of the vehicle"
-          example: "Toyota"
+          description: The make of the vehicle
+          example: Toyota
         vehicleModel:
           type: string
-          description: "The model of the vehicle"
-          example: "Camry"
+          description: The model of the vehicle
+          example: Camry
         vehicleYear:
           type: integer
-          description: "The year the vehicle was manufactured"
+          description: The year the vehicle was manufactured
           example: 2020
         vehicleLicensePlate:
           type: string
-          description: "The vehicle's license plate number"
-          example: "XYZ 1234"
+          description: The vehicle's license plate number
+          example: XYZ 1234
         vehicleDescription:
           type: string
           nullable: true
-          description: "A description of the vehicle, including any notable features or conditions"
-          example: "A spacious SUV with leather seats and a sunroof."
+          description: A description of the vehicle, including any notable features or conditions
+          example: A spacious SUV with leather seats and a sunroof
         vehicleFeatures:
           type: array
           items:
             type: string
             enum: [ wi-fi, child-seat, pet-friendly ]
-          description: "Features available in the vehicle. Choose from the provided options"
-          example: [ "wi-fi", "pet-friendly" ]
+          description: Features available in the vehicle. Choose from the provided options
+          example: [ wi-fi, pet-friendly ]
         createdAt:
           type: string
           format: date-time
-          description: "The date and time when the driver was created"
-          example: "2023-03-05T12:00:00Z"
+          description: The date and time when the driver was created
+          example: 2023-03-05T12:00:00Z
     DriverInputDto:
       type: object
       required:
@@ -188,53 +188,53 @@ components:
       properties:
         name:
           type: string
-          description: "The full name of the driver"
-          example: "Tom Rider"
+          description: "The full name of the driver
+          example: Tom Rider
         phoneNumber:
           type: string
-          description: "The driver's phone number"
-          example: "123-456-7890"
+          description: The driver's phone number
+          example: 123-456-7890"
         email:
           type: string
-          description: "The driver's email address"
-          example: "tom.rider@example.com"
+          description: The driver's email address
+          example: tom.rider@example.com
         vehicleMake:
           type: string
-          description: "The make of the vehicle"
-          example: "Toyota"
+          description: The make of the vehicle
+          example: Toyota
         vehicleModel:
           type: string
-          description: "The model of the vehicle"
-          example: "Camry"
+          description: The model of the vehicle
+          example: Camry
         vehicleYear:
           type: integer
-          description: "The year the vehicle was manufactured"
+          description: The year the vehicle was manufactured
           example: 2025
         vehicleLicensePlate:
           type: string
-          description: "The vehicle's license plate number"
-          example: "XYZ 1234"
+          description: The vehicle's license plate number
+          example: XYZ 1234
         vehicleDescription:
           type: string
           nullable: true
-          description: "A description of the vehicle, including any notable features or conditions"
-          example: "A spacious SUV with leather seats and a sunroof"
+          description: A description of the vehicle, including any notable features or conditions
+          example: A spacious SUV with leather seats and a sunroof
         vehicleFeatures:
           type: array
           items:
             type: string
             enum: [ wi-fi, child-seat, pet-friendly ]
-          description: "Features available in the vehicle. Choose from the provided options"
-          example: [ "wi-fi", "pet-friendly" ]
+          description: Features available in the vehicle. Choose from the provided options
+          example: [ wi-fi, pet-friendly ]
     ValidationError:
       type: object
       properties:
         field:
           type: string
-          example: "name"
+          example: name
         message:
           type: string
-          example: "Invalid name"
+          example: Invalid name
     ValidationErrorResponse:
       type: object
       properties:
