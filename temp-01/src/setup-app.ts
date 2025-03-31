@@ -1,9 +1,7 @@
 import express, { Express } from 'express';
-import cors from 'cors';
 import { setupSwagger } from './core/swagger/setup-swagger';
 import { driversRouter } from './drivers/routes/drivers.route';
 import { testingRouter } from './testing/routes/testing.route';
-import swaggerUi from "swagger-ui-express";
 
 /**
  * Настраиваем routes, cors, swagger

@@ -1,10 +1,9 @@
+// @ts-ignore
 import request from 'supertest';
+// @ts-ignore
 import express from 'express';
 
-import {
-  DriverStatus,
-  VehicleFeature,
-} from '../../../src/drivers/types/driver';
+import { VehicleFeature } from '../../../src/drivers/types/driver';
 import { setupApp } from '../../../src/setup-app';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { DriverInputDto } from '../../../src/drivers/dto/driver.input-dto';
@@ -33,14 +32,12 @@ describe('Driver API', () => {
       email: 'feodor@example.com',
     };
 
-    const createdDriver = await createDriver(app, newDriver);
-
-    expect(createdDriver.status).toBe(DriverStatus.Online);
+    await createDriver(app, newDriver);
   });
 
   it('✅ should return drivers list; GET /api/drivers', async () => {
-    await createDriver(app, { name: 'Another Driver' });
-    await createDriver(app, { name: 'Another Driver2' });
+    await createDriver(app);
+    await createDriver(app);
 
     const response = await request(app)
       .get(DRIVERS_PATH)
@@ -52,7 +49,7 @@ describe('Driver API', () => {
   });
 
   it('✅ should return driver by id; GET /api/drivers/:id', async () => {
-    const createdDriver = await createDriver(app, { name: 'Den' });
+    const createdDriver = await createDriver(app);
 
     const driver = await getDriverById(app, createdDriver.id);
 
@@ -64,7 +61,7 @@ describe('Driver API', () => {
   });
 
   it('✅ should update driver; PUT /api/drivers/:id', async () => {
-    const createdDriver = await createDriver(app, { name: 'Another Driver' });
+    const createdDriver = await createDriver(app);
 
     const driverUpdateData: DriverInputDto = {
       name: 'Updated Name',
@@ -86,36 +83,20 @@ describe('Driver API', () => {
       ...driverUpdateData,
       id: createdDriver.id,
       createdAt: expect.any(String),
-      status: DriverStatus.Online,
     });
   });
 
-  it('✅ should update driver status; PUT /api/drivers/:id/status', async () => {
-    const createdDriver = await createDriver(app, { name: 'Another Driver' });
-
-    const statusUpdateData = {
-      status: DriverStatus.Offline,
-    };
-
-    await request(app)
-      .put(`${DRIVERS_PATH}/${createdDriver.id}/activity`)
-      .set('Authorization', adminToken)
-      .send(statusUpdateData)
-      .expect(HttpStatus.NoContent);
-
-    const driverResponse = await getDriverById(app, createdDriver.id);
-
-    expect(driverResponse.status).toBe(DriverStatus.Offline);
-  });
-
   it('✅ should delete driver and check after "NOT FOUND"; DELETE /api/drivers/:id', async () => {
-    const createdDriver = await createDriver(app, { name: 'Another Driver' });
+    const createdDriver = await createDriver(app);
 
     await request(app)
       .delete(`${DRIVERS_PATH}/${createdDriver.id}`)
       .set('Authorization', adminToken)
       .expect(HttpStatus.NoContent);
 
-    await getDriverById<null>(app, createdDriver.id, HttpStatus.NotFound);
+    await request(app)
+      .get(`${DRIVERS_PATH}/${createdDriver.id}`)
+      .set('Authorization', adminToken)
+      .expect(HttpStatus.NotFound);
   });
 });

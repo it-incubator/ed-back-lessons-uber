@@ -4,7 +4,7 @@ import { ValidationError } from '../types/validationError';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const vehicleInputDtoValidation = (
+export const driverInputDtoValidation = (
   data: DriverInputDto,
 ): ValidationError[] => {
   const errors: ValidationError[] = [];
