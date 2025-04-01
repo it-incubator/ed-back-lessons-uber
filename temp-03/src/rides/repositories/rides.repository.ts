@@ -11,10 +11,10 @@ export const ridesRepository = {
     return rideCollection.findOne({ _id: new ObjectId(id) });
   },
 
-  async existsActiveRideByDriverId(driverId: string): Promise<boolean> {
-    const ride = await rideCollection.findOne({ driverId, finishedAt: null });
-
-    return !!ride;
+  async findActiveRideByDriverId(
+    driverId: string,
+  ): Promise<WithId<Ride> | null> {
+    return rideCollection.findOne({ driverId, finishedAt: null });
   },
 
   async createRide(newRide: Ride): Promise<WithId<Ride>> {

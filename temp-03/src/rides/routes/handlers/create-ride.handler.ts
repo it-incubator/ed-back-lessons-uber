@@ -27,8 +27,7 @@ export async function createRideHandler(
     }
 
     // Если у водителя сейчас есть заказ, то создать новую поездку нельзя
-    const activeRide =
-      await ridesRepository.existsActiveRideByDriverId(driverId);
+    const activeRide = await ridesRepository.findActiveRideByDriverId(driverId);
 
     if (activeRide) {
       res

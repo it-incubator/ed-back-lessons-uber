@@ -21,7 +21,7 @@ export async function deleteDriverHandler(req: Request, res: Response) {
     }
 
     // Если у водителя сейчас есть заказ, то удалить его нельзя
-    const activeRide = await ridesRepository.existsActiveRideByDriverId(id);
+    const activeRide = await ridesRepository.findActiveRideByDriverId(id);
 
     if (activeRide) {
       res
