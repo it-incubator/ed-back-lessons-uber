@@ -9,24 +9,21 @@ import { RIDES_PATH } from '../../../src/core/paths/paths';
 import { getRideDto } from './get-ride-dto';
 import { RideViewModel } from '../../../src/rides/types/ride-view-model';
 
-export async function createRide<R = RideViewModel>(
+export async function createRide(
   app: Express,
-  rideDto?: Partial<RideInputDto>,
-  expectedStatus?: HttpStatus,
-): Promise<R> {
-  const driverId = rideDto?.driverId ?? (await createDriver(app)).id;
+  rideDto?: RideInputDto,
+): Promise<RideViewModel> {
+  const driver = await createDriver(app);
 
-  const defaultRideData = getRideDto(driverId);
+  const defaultRideData = getRideDto(driver.id);
 
   const testRideData = { ...defaultRideData, ...rideDto };
-
-  const testStatus = expectedStatus ?? HttpStatus.Created;
 
   const createdRideResponse = await request(app)
     .post(RIDES_PATH)
     .set('Authorization', generateBasicAuthToken())
     .send(testRideData)
-    .expect(testStatus);
+    .expect(HttpStatus.Created);
 
   return createdRideResponse.body;
 }

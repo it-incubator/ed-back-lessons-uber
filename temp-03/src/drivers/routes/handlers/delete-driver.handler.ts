@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { driversRepository } from '../../repositories/drivers.repository';
-import { DriverStatus } from '../../types/driver';
 import { createErrorMessages } from '../../../core/middlewares/validation/input-validtion-result.middleware';
+import { ridesRepository } from '../../../rides/repositories/rides.repository';
 
 export async function deleteDriverHandler(req: Request, res: Response) {
   try {
@@ -21,7 +21,9 @@ export async function deleteDriverHandler(req: Request, res: Response) {
     }
 
     // Если у водителя сейчас есть заказ, то удалить его нельзя
-    if (driver.status === DriverStatus.OnOrder) {
+    const activeRide = await ridesRepository.findActiveRideByDriverId(id);
+
+    if (activeRide) {
       res
         .status(HttpStatus.BadRequest)
         .send(

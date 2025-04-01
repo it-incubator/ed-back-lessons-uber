@@ -8,22 +8,19 @@ import { DRIVERS_PATH } from '../../../src/core/paths/paths';
 import { getDriverDto } from './get-driver-dto';
 import { DriverViewModel } from '../../../src/drivers/types/driver-view-model';
 
-export async function createDriver<R = DriverViewModel>(
+export async function createDriver(
   app: Express,
-  driverDto?: Partial<DriverInputDto>,
-  expectedStatus?: HttpStatus,
-): Promise<R> {
+  driverDto?: DriverInputDto,
+): Promise<DriverViewModel> {
   const defaultDriverData: DriverInputDto = getDriverDto();
 
   const testDriverData = { ...defaultDriverData, ...driverDto };
-
-  const testStatus = expectedStatus ?? HttpStatus.Created;
 
   const createdDriverResponse = await request(app)
     .post(DRIVERS_PATH)
     .set('Authorization', generateBasicAuthToken())
     .send(testDriverData)
-    .expect(testStatus);
+    .expect(HttpStatus.Created);
 
   return createdDriverResponse.body;
 }

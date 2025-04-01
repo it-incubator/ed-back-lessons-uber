@@ -1,12 +1,5 @@
 import { body } from 'express-validator';
-import { Currency, RideStatus } from '../types/ride';
-
-export const rideStatusValidation = body('status')
-  .isString()
-  .withMessage('status should be string')
-  .trim()
-  .isIn(Object.values(RideStatus))
-  .withMessage('Invalid status value');
+import { Currency } from '../types/ride';
 
 export const clientNameValidation = body('clientName')
   .isString()
@@ -32,15 +25,15 @@ export const currencyValidation = body('currency')
   .isIn(Object.values(Currency)) // Проверка на допустимые значения
   .withMessage('currency must be either "usd" or "eu"');
 
-export const startAddressValidation = body('startAddress')
+export const startAddressValidation = body('fromAddress')
   .isString()
-  .withMessage('startAddress should be string')
+  .withMessage('fromAddress should be string')
   .trim()
   .isLength({ min: 10, max: 200 });
 
-export const endAddressValidation = body('endAddress')
+export const endAddressValidation = body('toAddress')
   .isString()
-  .withMessage('endAddress should be string')
+  .withMessage('toAddress should be string')
   .trim()
   .isLength({ min: 10, max: 200 });
 

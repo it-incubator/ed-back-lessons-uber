@@ -1,6 +1,6 @@
-import { Ride, RideStatus } from '../types/ride';
+import { Ride } from '../types/ride';
 import { rideCollection } from '../../db/mongo.db';
-import { ClientSession, ObjectId, WithId } from 'mongodb';
+import { ObjectId, WithId } from 'mongodb';
 
 export const ridesRepository = {
   async findAll(): Promise<WithId<Ride>[]> {
@@ -11,23 +11,29 @@ export const ridesRepository = {
     return rideCollection.findOne({ _id: new ObjectId(id) });
   },
 
-  async updateStatus(
-    id: string,
-    newStatus: RideStatus,
-    session: ClientSession,
-  ): Promise<void> {
+  async findActiveRideByDriverId(
+    driverId: string,
+  ): Promise<WithId<Ride> | null> {
+    return rideCollection.findOne({ driverId, finishedAt: null });
+  },
+
+  async createRide(newRide: Ride): Promise<WithId<Ride>> {
+    const insertResult = await rideCollection.insertOne(newRide);
+
+    return { ...newRide, _id: insertResult.insertedId };
+  },
+
+  async finishedRide(id: string, finishedAt: Date) {
     const updateResult = await rideCollection.updateOne(
       {
         _id: new ObjectId(id),
       },
       {
         $set: {
-          status: newStatus,
-          finishedAt: new Date(),
+          finishedAt,
           updatedAt: new Date(),
         },
       },
-      { session },
     );
 
     if (updateResult.matchedCount < 1) {
@@ -35,14 +41,5 @@ export const ridesRepository = {
     }
 
     return;
-  },
-
-  async createRide(
-    newRide: Ride,
-    session: ClientSession,
-  ): Promise<WithId<Ride>> {
-    const insertResult = await rideCollection.insertOne(newRide, { session });
-
-    return { ...newRide, _id: insertResult.insertedId };
   },
 };

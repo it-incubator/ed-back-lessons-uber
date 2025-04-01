@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { DriverInputDto } from '../../dto/driver.input-dto';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { driversRepository } from '../../repositories/drivers.repository';
-import { Driver, DriverStatus } from '../../types/driver';
+import { Driver } from '../../types/driver';
 import { mapToDriverViewModel } from '../mappers/map-to-driver-view-model.util';
 
 export async function createDriverHandler(
@@ -14,7 +14,6 @@ export async function createDriverHandler(
       name: req.body.name,
       phoneNumber: req.body.phoneNumber,
       email: req.body.email,
-      status: DriverStatus.Online,
       vehicle: {
         make: req.body.vehicleMake,
         model: req.body.vehicleModel,

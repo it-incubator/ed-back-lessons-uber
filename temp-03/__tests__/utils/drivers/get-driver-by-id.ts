@@ -6,17 +6,14 @@ import { DRIVERS_PATH } from '../../../src/core/paths/paths';
 import { generateBasicAuthToken } from '../generate-admin-auth-token';
 import { DriverViewModel } from '../../../src/drivers/types/driver-view-model';
 
-export async function getDriverById<R = DriverViewModel>(
+export async function getDriverById(
   app: Express,
   driverId: string,
-  expectedStatus?: HttpStatus,
-): Promise<R> {
-  const testStatus = expectedStatus ?? HttpStatus.Ok;
-
+): Promise<DriverViewModel> {
   const driverResponse = await request(app)
     .get(`${DRIVERS_PATH}/${driverId}`)
     .set('Authorization', generateBasicAuthToken())
-    .expect(testStatus);
+    .expect(HttpStatus.Ok);
 
   return driverResponse.body;
 }
