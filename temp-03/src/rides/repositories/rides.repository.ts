@@ -23,14 +23,14 @@ export const ridesRepository = {
     return { ...newRide, _id: insertResult.insertedId };
   },
 
-  async finishedRide(id: string) {
+  async finishedRide(id: string, finishedAt: Date) {
     const updateResult = await rideCollection.updateOne(
       {
         _id: new ObjectId(id),
       },
       {
         $set: {
-          finishedAt: new Date(),
+          finishedAt,
           updatedAt: new Date(),
         },
       },

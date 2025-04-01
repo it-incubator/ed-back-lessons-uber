@@ -33,7 +33,7 @@ export async function finishRideHandler(
       return;
     }
 
-    await ridesRepository.finishedRide(id);
+    await ridesRepository.finishedRide(id, new Date());
 
     res.sendStatus(HttpStatus.NoContent);
   } catch (e: unknown) {
